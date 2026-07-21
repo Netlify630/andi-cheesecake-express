@@ -9,7 +9,7 @@ import logoAsset from "@/assets/andielicious-logo.png.asset.json";
 import heroImg from "@/assets/hero-cheesecake.jpg";
 import flavorClassic from "@/assets/flavor-classic.jpg";
 import flavorChocolate from "@/assets/flavor-chocolate.jpg";
-import flavorRotating from "@/assets/flavor-rotating.jpg";
+import { flavorOfTheWeek } from "@/content/flavor-of-the-week";
 
 export const Route = createFileRoute("/")({
   component: Home,
