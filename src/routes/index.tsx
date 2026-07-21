@@ -268,15 +268,15 @@ function HowItWorks() {
     },
     {
       n: "02",
-      title: "Order ahead (optional)",
+      title: "Reserve a slice (optional)",
       body:
-        "You can reserve a whole cake or slice by messaging us ahead of time. Payment can be sent in advance to lock in your order.",
+        "Want to make sure your favorite doesn't sell out? DM us to reserve slices ahead of time and Venmo to lock them in.",
     },
     {
       n: "03",
       title: "Drive over & pick up",
       body:
-        "Come by any time Friday through Tuesday, 8am–9pm. Grab your cheesecake from the self-serve fridge, pay if you haven't, and enjoy.",
+        "Come by any time Friday through Tuesday, 8am–9pm. Grab your slice from the self-serve fridge, pay if you haven't, and enjoy.",
     },
   ];
   return (
