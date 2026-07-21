@@ -10,6 +10,7 @@ import heroImg from "@/assets/hero-cheesecake.jpg";
 import flavorClassic from "@/assets/flavor-classic.jpg";
 import flavorChocolate from "@/assets/flavor-chocolate.jpg";
 import { flavorOfTheWeek } from "@/content/flavor-of-the-week";
+import { site } from "@/content/site";
 
 export const Route = createFileRoute("/")({
   component: Home,
@@ -33,6 +34,7 @@ function Home() {
       <Flavors />
       <HowItWorks />
       <Hours />
+      <LocationSection />
       <Reviews />
       <Footer />
     </div>
@@ -41,21 +43,31 @@ function Home() {
 
 function Nav() {
   return (
-    <header className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-        <a href="#top" className="flex items-center gap-2">
-          <img src={logoAsset.url} alt="Andielicious" className="h-9 w-9 rounded-full object-cover" />
-          <span className="font-display text-xl tracking-tight">Andielicious</span>
+    <header className="sticky top-0 z-40 border-b border-border/60 bg-cream/85 backdrop-blur">
+      <div className="mx-auto flex h-20 max-w-6xl items-center justify-between px-6">
+        <a href="#top" className="flex items-center gap-3">
+          <img
+            src={logoAsset.url}
+            alt="Andielicious"
+            className="h-12 w-12 rounded-full object-cover ring-2 ring-berry/40 ring-offset-2 ring-offset-background"
+          />
+          <span className="flex flex-col leading-none">
+            <span className="font-display text-2xl tracking-tight text-accent">Andielicious</span>
+            <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-sage">
+              Cheesecake · Since 2024
+            </span>
+          </span>
         </a>
         <nav className="hidden gap-8 text-xs font-medium uppercase tracking-[0.18em] sm:flex">
           <a href="#flavors" className="hover:text-accent transition-colors">Flavors</a>
           <a href="#how" className="hover:text-accent transition-colors">How it works</a>
           <a href="#hours" className="hover:text-accent transition-colors">Hours</a>
+          <a href="#location" className="hover:text-accent transition-colors">Location</a>
           <a href="#reviews" className="hover:text-accent transition-colors">Reviews</a>
         </nav>
         <a
           href="#hours"
-          className="rounded-full bg-primary px-4 py-2 text-xs font-semibold uppercase tracking-widest text-primary-foreground transition-colors hover:bg-accent"
+          className="rounded-full bg-accent px-4 py-2 text-xs font-semibold uppercase tracking-widest text-accent-foreground transition-colors hover:bg-primary"
         >
           Order ahead
         </a>
@@ -66,48 +78,70 @@ function Nav() {
 
 function Hero() {
   return (
-    <section id="top" className="relative overflow-hidden">
-      <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 px-6 py-20 md:grid-cols-[1.1fr_1fr] md:py-28">
+    <section id="top" className="relative overflow-hidden bg-gradient-to-b from-blush/60 via-background to-background">
+      {/* decorative sprig blobs */}
+      <div className="pointer-events-none absolute -left-24 top-10 h-72 w-72 rounded-full bg-sage/25 blur-3xl" />
+      <div className="pointer-events-none absolute -right-24 bottom-0 h-80 w-80 rounded-full bg-berry/20 blur-3xl" />
+
+      <div className="relative mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 px-6 py-20 md:grid-cols-[1.1fr_1fr] md:py-28">
         <div>
-          <p className="mb-6 text-xs font-semibold uppercase tracking-[0.28em] text-accent">
-            Est. 2024 · Baked on Thursdays
-          </p>
+          <div className="mb-6 flex items-center gap-4">
+            <img
+              src={logoAsset.url}
+              alt="Andielicious logo"
+              className="h-20 w-20 rounded-full object-cover shadow-lg ring-4 ring-cream md:h-24 md:w-24"
+            />
+            <div className="flex flex-col">
+              <span className="text-[10px] font-semibold uppercase tracking-[0.35em] text-sage">
+                Est. 2024 · Baked on Thursdays
+              </span>
+              <span className="font-display text-3xl italic text-accent md:text-4xl">
+                Andielicious
+              </span>
+            </div>
+          </div>
+
           <h1 className="font-display text-5xl leading-[1.02] md:text-7xl">
-            Small-batch cheesecake,<br />
-            <em className="font-normal italic text-accent">self-served</em> with love.
+            Small-batch <span className="text-accent">cheesecake</span>,<br />
+            <em className="font-normal italic text-sage">self-served</em> with love.
           </h1>
           <p className="mt-8 max-w-md text-base leading-relaxed text-muted-foreground md:text-lg">
-            Every Thursday we bake. Friday through Tuesday, our little cheesecake
+            Every Thursday Andie bakes. Friday through Tuesday, the little cheesecake
             fridge is open — drive over on your own time, pay, and take home a slice
             (or a whole cake).
           </p>
           <div className="mt-10 flex flex-wrap gap-3">
             <a
               href="#flavors"
-              className="rounded-full bg-primary px-6 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-primary-foreground transition-colors hover:bg-accent"
+              className="rounded-full bg-accent px-6 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent-foreground transition-colors hover:bg-primary"
             >
               See this week's flavors
             </a>
             <a
               href="#how"
-              className="rounded-full border border-border bg-transparent px-6 py-3 text-xs font-semibold uppercase tracking-[0.2em] transition-colors hover:border-accent hover:text-accent"
+              className="rounded-full border border-accent bg-transparent px-6 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent transition-colors hover:bg-accent hover:text-accent-foreground"
             >
               How self-serve works
             </a>
           </div>
+          <p className="mt-6 inline-flex items-center gap-2 rounded-full bg-sage/15 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-sage">
+            <span className="h-1.5 w-1.5 rounded-full bg-sage" />
+            {site.payment.methods}
+          </p>
         </div>
 
         <div className="relative">
-          <div className="absolute -inset-6 -z-10 rounded-[2rem] bg-secondary" />
+          <div className="absolute -inset-6 -z-10 rounded-[2rem] bg-blush" />
+          <div className="absolute -inset-2 -z-10 rounded-[2rem] bg-sage/20" />
           <img
             src={heroImg}
-            alt="A single slice of Andielicious cheesecake on a matte black plate"
+            alt="A single slice of Andielicious cheesecake"
             width={1400}
             height={1600}
             className="aspect-[7/8] w-full rounded-3xl object-cover shadow-xl"
           />
-          <div className="absolute -bottom-6 left-6 max-w-[220px] rounded-2xl border border-border bg-background p-5 shadow-lg">
-            <p className="font-display text-lg italic leading-snug">
+          <div className="absolute -bottom-6 left-6 max-w-[220px] rounded-2xl border border-berry/30 bg-background p-5 shadow-lg">
+            <p className="font-display text-lg italic leading-snug text-accent">
               "Tastes homemade because it is."
             </p>
             <p className="mt-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
@@ -268,14 +302,14 @@ function Hours() {
     <section id="hours" className="border-y border-border bg-primary py-20 text-primary-foreground md:py-28">
       <div className="mx-auto grid max-w-6xl grid-cols-1 gap-12 px-6 md:grid-cols-2 md:items-center">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">Visit</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-blush">Visit</p>
           <h2 className="mt-3 font-display text-4xl md:text-5xl">Open five days a week.</h2>
-          <p className="mt-6 max-w-md text-base leading-relaxed text-primary-foreground/70">
+          <p className="mt-6 max-w-md text-base leading-relaxed text-primary-foreground/75">
             Bake day is Thursday — the fridge is closed while Andie's in the kitchen.
-            Come by any other day and help yourself.
+            Come by any other day and help yourself. <span className="text-blush">{site.payment.methods}.</span>
           </p>
           <a
-            href="mailto:hello@andielicious.com"
+            href={`mailto:${site.contactEmail}`}
             className="mt-8 inline-flex items-center rounded-full bg-accent px-6 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent-foreground transition-opacity hover:opacity-90"
           >
             Reserve a cheesecake
@@ -302,6 +336,63 @@ function Hours() {
     </section>
   );
 }
+
+function LocationSection() {
+  const { location, payment } = site;
+  return (
+    <section id="location" className="relative overflow-hidden py-20 md:py-28">
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-blush/40 to-transparent" />
+      <div className="relative mx-auto grid max-w-6xl grid-cols-1 gap-10 px-6 md:grid-cols-2">
+        {/* Location card */}
+        <div className="rounded-3xl border border-berry/20 bg-card p-8 md:p-10">
+          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-sage">Find the fridge</p>
+          <h2 className="mt-3 font-display text-4xl md:text-5xl">
+            Where to <em className="italic text-accent">find us</em>
+          </h2>
+          <address className="mt-6 not-italic">
+            <p className="font-display text-2xl">{location.addressLine1}</p>
+            <p className="font-display text-2xl">{location.addressLine2}</p>
+          </address>
+          {location.note && (
+            <p className="mt-4 text-sm leading-relaxed text-muted-foreground">{location.note}</p>
+          )}
+          {location.mapsUrl && (
+            <a
+              href={location.mapsUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-6 inline-flex rounded-full bg-accent px-6 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent-foreground transition-colors hover:bg-primary"
+            >
+              Get directions
+            </a>
+          )}
+        </div>
+
+        {/* Payment card */}
+        <div className="rounded-3xl bg-sage/15 p-8 md:p-10">
+          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">Payment</p>
+          <h2 className="mt-3 font-display text-4xl md:text-5xl">
+            {payment.methods.split(" or ")[0]} <em className="italic text-sage">or</em> {payment.methods.split(" or ")[1] ?? ""}
+          </h2>
+          <p className="mt-6 text-base leading-relaxed text-muted-foreground">
+            Sorry, no cards. Pay ahead over Venmo to reserve a cake, or drop cash
+            in the box at the fridge.
+          </p>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <span className="rounded-full bg-berry px-5 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-accent-foreground">
+              Venmo · {payment.venmoHandle}
+            </span>
+            <span className="rounded-full border border-sage px-5 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-sage">
+              Cash accepted
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+
 
 function Reviews() {
   const [reviews, setReviews] = useState<Review[]>([]);

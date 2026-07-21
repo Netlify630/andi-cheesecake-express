@@ -31,6 +31,10 @@
   --color-cream: var(--cream);
   --color-ink: var(--ink);
   --color-caramel: var(--caramel);
+  --color-berry: var(--berry);
+  --color-blush: var(--blush);
+  --color-sage: var(--sage);
+  --color-butter: var(--butter);
   --font-display: var(--font-display);
   --font-body: var(--font-body);
 }
@@ -40,8 +44,12 @@
 
   /* Brand tokens — matched to the Andielicious logo */
   --cream: oklch(0.977 0.008 85);      /* logo background */
-  --ink: oklch(0.16 0.01 60);          /* logo black */
+  --ink: oklch(0.19 0.015 40);         /* logo black-brown */
   --caramel: oklch(0.62 0.11 60);      /* graham crust */
+  --berry: oklch(0.62 0.18 15);        /* strawberry / raspberry */
+  --blush: oklch(0.92 0.04 20);        /* soft pink */
+  --sage: oklch(0.66 0.08 145);        /* botanical sprig green */
+  --butter: oklch(0.95 0.06 90);       /* warm buttery cream */
 
   --background: var(--cream);
   --foreground: var(--ink);
@@ -51,17 +59,17 @@
   --popover-foreground: var(--ink);
   --primary: var(--ink);
   --primary-foreground: var(--cream);
-  --secondary: oklch(0.94 0.012 82);
+  --secondary: var(--blush);
   --secondary-foreground: var(--ink);
   --muted: oklch(0.94 0.012 82);
-  --muted-foreground: oklch(0.45 0.015 60);
-  --accent: var(--caramel);
+  --muted-foreground: oklch(0.45 0.02 40);
+  --accent: var(--berry);
   --accent-foreground: var(--cream);
   --destructive: oklch(0.55 0.20 25);
   --destructive-foreground: var(--cream);
-  --border: oklch(0.88 0.012 75);
-  --input: oklch(0.88 0.012 75);
-  --ring: var(--caramel);
+  --border: oklch(0.88 0.02 40);
+  --input: oklch(0.88 0.02 40);
+  --ring: var(--berry);
 
   --font-display: "Cormorant Garamond", "Playfair Display", Georgia, serif;
   --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
