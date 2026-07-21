@@ -11,6 +11,9 @@ import flavorClassic from "@/assets/flavor-classic.jpg";
 import flavorChocolate from "@/assets/flavor-chocolate.jpg";
 import { flavorOfTheWeek } from "@/content/flavor-of-the-week";
 
+import { flavorOfTheWeek } from "@/content/flavor-of-the-week";
+import { site } from "@/content/site";
+
 export const Route = createFileRoute("/")({
   component: Home,
 });
