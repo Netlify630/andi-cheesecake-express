@@ -14,6 +14,24 @@ export type Database = {
   }
   public: {
     Tables: {
+      flavor_votes: {
+        Row: {
+          created_at: string
+          flavor_slug: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          flavor_slug: string
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          flavor_slug?: string
+          id?: string
+        }
+        Relationships: []
+      }
       reviews: {
         Row: {
           comment: string
