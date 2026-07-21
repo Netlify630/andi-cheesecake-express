@@ -29,6 +29,7 @@ function Home() {
       <Toaster position="top-center" />
       <Nav />
       <Hero />
+      <FlavorOfTheWeek />
       <Flavors />
       <HowItWorks />
       <Hours />
@@ -134,11 +135,49 @@ const FLAVORS = [
   },
   {
     tag: "This week's rotating flavor",
-    name: "Strawberry Compote",
-    desc: "A new flavor every bake day — this week, cream cheese kissed with roasted strawberries.",
-    img: flavorRotating,
+    name: flavorOfTheWeek.name,
+    desc: flavorOfTheWeek.description,
+    img: flavorOfTheWeek.image,
   },
 ];
+
+function FlavorOfTheWeek() {
+  if (!flavorOfTheWeek.visible) return null;
+  return (
+    <section id="flavor-of-the-week" className="border-t border-border py-20 md:py-28">
+      <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 px-6 md:grid-cols-[1fr_1.05fr]">
+        <div className="relative order-2 md:order-1">
+          <div className="absolute -inset-5 -z-10 rounded-[2rem] bg-secondary" />
+          <img
+            src={flavorOfTheWeek.image}
+            alt={flavorOfTheWeek.name}
+            width={1200}
+            height={1200}
+            className="aspect-square w-full rounded-3xl object-cover shadow-xl"
+          />
+        </div>
+        <div className="order-1 md:order-2">
+          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">
+            {flavorOfTheWeek.weekLabel}
+          </p>
+          <h2 className="mt-4 font-display text-5xl leading-[1.05] md:text-6xl">
+            <em className="font-normal italic text-accent">Flavor</em> of the week
+          </h2>
+          <p className="mt-6 font-display text-3xl md:text-4xl">{flavorOfTheWeek.name}</p>
+          <p className="mt-5 max-w-md text-base leading-relaxed text-muted-foreground">
+            {flavorOfTheWeek.description}
+          </p>
+          <a
+            href="#hours"
+            className="mt-8 inline-flex rounded-full bg-primary px-6 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-primary-foreground transition-colors hover:bg-accent"
+          >
+            Reserve a slice
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+}
 
 function Flavors() {
   return (
