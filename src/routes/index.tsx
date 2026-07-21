@@ -65,6 +65,8 @@ function Nav() {
           <a href="#how" className="hover:text-accent transition-colors">How it works</a>
           <a href="#hours" className="hover:text-accent transition-colors">Hours</a>
           <a href="#location" className="hover:text-accent transition-colors">Location</a>
+          <a href="#baker" className="hover:text-accent transition-colors">Baker</a>
+          <a href="#vote" className="hover:text-accent transition-colors">Vote</a>
           <a href="#reviews" className="hover:text-accent transition-colors">Reviews</a>
         </nav>
         <a
