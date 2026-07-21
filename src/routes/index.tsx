@@ -111,8 +111,8 @@ function Hero() {
           </h1>
           <p className="mt-8 max-w-md text-base leading-relaxed text-muted-foreground md:text-lg">
             Every Thursday Andie bakes. Friday through Tuesday, the little cheesecake
-            fridge is open — drive over on your own time, pay, and take home a slice
-            (or a whole cake).
+            fridge is open — drive over on your own time, pay, and take home a
+            fresh slice. <span className="italic text-accent">Slices only</span>, always made from scratch.
           </p>
           <div className="mt-10 flex flex-wrap gap-3">
             <a
