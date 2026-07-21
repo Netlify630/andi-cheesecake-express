@@ -9,6 +9,7 @@ import logoAsset from "@/assets/andielicious-logo.png.asset.json";
 import heroImg from "@/assets/hero-cheesecake.jpg";
 import flavorClassic from "@/assets/flavor-classic.jpg";
 import flavorChocolate from "@/assets/flavor-chocolate.jpg";
+import bakerImg from "@/assets/baker.jpg";
 import { flavorOfTheWeek } from "@/content/flavor-of-the-week";
 import { site } from "@/content/site";
 
