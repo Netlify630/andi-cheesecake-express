@@ -34,7 +34,7 @@ function Home() {
       <Flavors />
       <HowItWorks />
       <Hours />
-      <Location />
+      <LocationSection />
       <Reviews />
       <Footer />
     </div>
