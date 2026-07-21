@@ -227,7 +227,7 @@ function Flavors() {
             <h2 className="mt-3 font-display text-4xl md:text-5xl">Two staples. One surprise.</h2>
           </div>
           <p className="max-w-sm text-sm text-muted-foreground">
-            Every whole cheesecake is $38. Individual slices $7. Pay ahead by DM, or in
+            Sold by the slice only — $7 each. Pay ahead by DM to reserve, or in
             person at the fridge.
           </p>
         </div>
