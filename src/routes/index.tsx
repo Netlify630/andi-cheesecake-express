@@ -397,6 +397,172 @@ function LocationSection() {
   );
 }
 
+function BakerSection() {
+  const { baker } = site;
+  return (
+    <section id="baker" className="border-t border-border bg-secondary/40 py-20 md:py-28">
+      <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 px-6 md:grid-cols-[1fr_1.1fr]">
+        <div className="relative">
+          <div className="absolute -inset-5 -z-10 rounded-[2rem] bg-blush" />
+          <div className="absolute -inset-2 -z-10 rounded-[2rem] bg-sage/25" />
+          <img
+            src={bakerImg}
+            alt={`${baker.name}, the baker behind Andielicious`}
+            loading="lazy"
+            width={1200}
+            height={1400}
+            className="aspect-[6/7] w-full rounded-3xl object-cover shadow-xl"
+          />
+        </div>
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">
+            Meet the baker
+          </p>
+          <h2 className="mt-3 font-display text-5xl leading-[1.05] md:text-6xl">
+            Hi, I'm <em className="italic text-accent">{baker.name}</em>.
+          </h2>
+          <p className="mt-4 text-xs font-semibold uppercase tracking-[0.22em] text-sage">
+            {baker.role}
+          </p>
+          <p className="mt-6 max-w-md text-base leading-relaxed text-muted-foreground">
+            {baker.bio}
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function FlavorVote() {
+  const flavors = site.voteFlavors;
+  const [counts, setCounts] = useState<Record<string, number>>({});
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [votedSlug, setVotedSlug] = useState<string | null>(null);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("andielicious_voted_flavor");
+      if (saved) setVotedSlug(saved);
+    } catch {}
+    loadCounts();
+    async function loadCounts() {
+      const { data, error } = await supabase
+        .from("flavor_votes")
+        .select("flavor_slug");
+      if (error) console.error(error);
+      const tally: Record<string, number> = {};
+      (data ?? []).forEach((row: { flavor_slug: string }) => {
+        tally[row.flavor_slug] = (tally[row.flavor_slug] ?? 0) + 1;
+      });
+      setCounts(tally);
+      setLoading(false);
+    }
+  }, []);
+
+  const total = Object.values(counts).reduce((a, b) => a + b, 0);
+
+  async function vote(slug: string) {
+    if (votedSlug || submitting) return;
+    setSubmitting(true);
+    const { error } = await supabase.from("flavor_votes").insert({ flavor_slug: slug });
+    setSubmitting(false);
+    if (error) {
+      toast.error("Couldn't record your vote. Try again in a moment.");
+      return;
+    }
+    try {
+      localStorage.setItem("andielicious_voted_flavor", slug);
+    } catch {}
+    setVotedSlug(slug);
+    setCounts((prev) => ({ ...prev, [slug]: (prev[slug] ?? 0) + 1 }));
+    toast.success("Thanks for voting! Andie will see this.");
+  }
+
+  return (
+    <section id="vote" className="py-20 md:py-28">
+      <div className="mx-auto max-w-6xl px-6">
+        <div className="mb-12 flex flex-col items-start justify-between gap-4 md:flex-row md:items-end">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">
+              You pick
+            </p>
+            <h2 className="mt-3 font-display text-4xl md:text-5xl">
+              Vote on the <em className="italic text-accent">next flavor</em>.
+            </h2>
+          </div>
+          <p className="max-w-sm text-sm text-muted-foreground">
+            The top pick shows up in an upcoming rotating slot. One vote per
+            neighbor, please.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+          {flavors.map((f) => {
+            const count = counts[f.slug] ?? 0;
+            const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+            const isVoted = votedSlug === f.slug;
+            const disabled = !!votedSlug || submitting || loading;
+            return (
+              <button
+                key={f.slug}
+                type="button"
+                onClick={() => vote(f.slug)}
+                disabled={disabled}
+                className={`group relative overflow-hidden rounded-2xl border p-6 text-left transition-all ${
+                  isVoted
+                    ? "border-accent bg-accent/10"
+                    : "border-border bg-card hover:border-accent/60 hover:-translate-y-0.5"
+                } ${disabled && !isVoted ? "opacity-70" : ""}`}
+              >
+                {/* progress bar background */}
+                <div
+                  className="absolute inset-y-0 left-0 -z-0 bg-blush/50 transition-all duration-500"
+                  style={{ width: votedSlug ? `${pct}%` : "0%" }}
+                  aria-hidden
+                />
+                <div className="relative flex items-start justify-between gap-3">
+                  <div>
+                    <div className="text-2xl">{f.emoji}</div>
+                    <p className="mt-3 font-display text-xl leading-tight">{f.label}</p>
+                  </div>
+                  {votedSlug && (
+                    <div className="text-right">
+                      <p className="font-display text-xl text-accent">{pct}%</p>
+                      <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+                        {count} vote{count === 1 ? "" : "s"}
+                      </p>
+                    </div>
+                  )}
+                </div>
+                <p className="relative mt-4 text-[10px] font-semibold uppercase tracking-[0.22em]">
+                  {isVoted ? (
+                    <span className="text-accent">✓ Your pick</span>
+                  ) : votedSlug ? (
+                    <span className="text-muted-foreground">Tap disabled</span>
+                  ) : (
+                    <span className="text-sage">Tap to vote</span>
+                  )}
+                </p>
+              </button>
+            );
+          })}
+        </div>
+
+        <p className="mt-8 text-center text-xs text-muted-foreground">
+          {loading
+            ? "Loading votes…"
+            : votedSlug
+            ? `${total} vote${total === 1 ? "" : "s"} so far — thanks for weighing in!`
+            : `${total} vote${total === 1 ? "" : "s"} so far.`}
+        </p>
+      </div>
+    </section>
+  );
+}
+
+
+
 
 
 function Reviews() {
