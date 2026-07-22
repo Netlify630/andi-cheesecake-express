@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Star } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,7 +10,7 @@ import heroImg from "@/assets/hero-cheesecake.jpg";
 import flavorClassic from "@/assets/flavor-classic.jpg";
 import flavorChocolate from "@/assets/flavor-chocolate.jpg";
 import bakerImg from "@/assets/baker.jpg";
-import { flavorOfTheWeek } from "@/content/flavor-of-the-week";
+import flavorRotatingImg from "@/assets/flavor-rotating.jpg";
 import { site } from "@/content/site";
 
 export const Route = createFileRoute("/")({
@@ -25,19 +25,65 @@ type Review = {
   created_at: string;
 };
 
+type DbFlavor = {
+  id: string;
+  slug: string;
+  name: string;
+  description: string;
+  image_url: string | null;
+  category: "staple" | "weekly" | "vote_option";
+  week_label: string | null;
+  position: number;
+};
+
+// Fallback local images by slug when admin hasn't set an image_url.
+const FALLBACK_IMAGES: Record<string, string> = {
+  "classic-vanilla": flavorClassic,
+  "chocolate-ganache": flavorChocolate,
+  "strawberry-compote": flavorRotatingImg,
+};
+
+function imageForFlavor(f: Pick<DbFlavor, "slug" | "image_url">) {
+  return f.image_url || FALLBACK_IMAGES[f.slug] || heroImg;
+}
+
 function Home() {
+  const [flavors, setFlavors] = useState<DbFlavor[]>([]);
+
+  useEffect(() => {
+    // Fire-and-forget page view tracking
+    supabase.from("page_views").insert({ path: window.location.pathname }).then(({ error }) => {
+      if (error) console.warn("page view", error);
+    });
+    // Load flavors from DB (admin-editable)
+    supabase
+      .from("flavors")
+      .select("id,slug,name,description,image_url,category,week_label,position")
+      .eq("active", true)
+      .order("position", { ascending: true })
+      .then(({ data, error }) => {
+        if (error) console.error(error);
+        setFlavors((data as DbFlavor[]) ?? []);
+      });
+  }, []);
+
+  const weekly = flavors.find((f) => f.category === "weekly") ?? null;
+  const staples = flavors.filter((f) => f.category === "staple");
+  const voteOptions = flavors.filter((f) => f.category === "vote_option");
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Toaster position="top-center" />
       <Nav />
       <Hero />
-      <FlavorOfTheWeek />
-      <Flavors />
+      <FlavorOfTheWeek weekly={weekly} />
+      <Flavors staples={staples} weekly={weekly} />
       <HowItWorks />
       <Hours />
       <LocationSection />
       <BakerSection />
-      <FlavorVote />
+      <FlavorVote options={voteOptions} />
+      <NewsletterSubscribe />
       <Reviews />
       <Footer />
     </div>
@@ -45,6 +91,41 @@ function Home() {
 }
 
 function Nav() {
+  const [email, setEmail] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    let ignore = false;
+    async function refresh() {
+      const { data } = await supabase.auth.getUser();
+      if (ignore) return;
+      setEmail(data.user?.email ?? null);
+      if (data.user) {
+        const { data: roles } = await supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", data.user.id);
+        if (ignore) return;
+        setIsAdmin((roles ?? []).some((r) => r.role === "admin"));
+      } else {
+        setIsAdmin(false);
+      }
+    }
+    refresh();
+    const { data: sub } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "SIGNED_IN" || event === "SIGNED_OUT" || event === "USER_UPDATED") refresh();
+    });
+    return () => {
+      ignore = true;
+      sub.subscription.unsubscribe();
+    };
+  }, []);
+
+  async function signOut() {
+    await supabase.auth.signOut();
+    toast.success("Signed out");
+  }
+
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-cream/85 backdrop-blur">
       <div className="mx-auto flex h-20 max-w-6xl items-center justify-between px-6">
@@ -61,7 +142,7 @@ function Nav() {
             </span>
           </span>
         </a>
-        <nav className="hidden gap-8 text-xs font-medium uppercase tracking-[0.18em] sm:flex">
+        <nav className="hidden gap-6 text-xs font-medium uppercase tracking-[0.18em] lg:flex">
           <a href="#flavors" className="hover:text-accent transition-colors">Flavors</a>
           <a href="#how" className="hover:text-accent transition-colors">How it works</a>
           <a href="#hours" className="hover:text-accent transition-colors">Hours</a>
@@ -70,12 +151,34 @@ function Nav() {
           <a href="#vote" className="hover:text-accent transition-colors">Vote</a>
           <a href="#reviews" className="hover:text-accent transition-colors">Reviews</a>
         </nav>
-        <a
-          href="#hours"
-          className="rounded-full bg-accent px-4 py-2 text-xs font-semibold uppercase tracking-widest text-accent-foreground transition-colors hover:bg-primary"
-        >
-          Order ahead
-        </a>
+        <div className="flex items-center gap-2">
+          {email ? (
+            <>
+              {isAdmin && (
+                <Link
+                  to="/admin"
+                  className="hidden rounded-full border border-accent bg-accent/10 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-accent hover:bg-accent hover:text-accent-foreground sm:inline-flex"
+                >
+                  Dashboard
+                </Link>
+              )}
+              <button
+                onClick={signOut}
+                className="rounded-full border border-border px-4 py-2 text-xs font-semibold uppercase tracking-widest hover:bg-secondary"
+                title={email}
+              >
+                Sign out
+              </button>
+            </>
+          ) : (
+            <Link
+              to="/auth"
+              className="rounded-full bg-accent px-4 py-2 text-xs font-semibold uppercase tracking-widest text-accent-foreground hover:bg-primary"
+            >
+              Sign in
+            </Link>
+          )}
+        </div>
       </div>
     </header>
   );
@@ -159,37 +262,16 @@ function Hero() {
   );
 }
 
-const FLAVORS = [
-  {
-    tag: "Always on the menu",
-    name: "Classic Vanilla Bean",
-    desc: "Our signature. Tall, silky, Madagascar vanilla with a buttery graham crust.",
-    img: flavorClassic,
-  },
-  {
-    tag: "Always on the menu",
-    name: "Deep Chocolate Ganache",
-    desc: "Dark chocolate cheesecake blanketed in glossy ganache. For the serious sweet tooth.",
-    img: flavorChocolate,
-  },
-  {
-    tag: "This week's rotating flavor",
-    name: flavorOfTheWeek.name,
-    desc: flavorOfTheWeek.description,
-    img: flavorOfTheWeek.image,
-  },
-];
-
-function FlavorOfTheWeek() {
-  if (!flavorOfTheWeek.visible) return null;
+function FlavorOfTheWeek({ weekly }: { weekly: DbFlavor | null }) {
+  if (!weekly) return null;
   return (
     <section id="flavor-of-the-week" className="border-t border-border py-20 md:py-28">
       <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 px-6 md:grid-cols-[1fr_1.05fr]">
         <div className="relative order-2 md:order-1">
           <div className="absolute -inset-5 -z-10 rounded-[2rem] bg-secondary" />
           <img
-            src={flavorOfTheWeek.image}
-            alt={flavorOfTheWeek.name}
+            src={imageForFlavor(weekly)}
+            alt={weekly.name}
             width={1200}
             height={1200}
             className="aspect-square w-full rounded-3xl object-cover shadow-xl"
@@ -197,14 +279,14 @@ function FlavorOfTheWeek() {
         </div>
         <div className="order-1 md:order-2">
           <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">
-            {flavorOfTheWeek.weekLabel}
+            {weekly.week_label || "This week only"}
           </p>
           <h2 className="mt-4 font-display text-5xl leading-[1.05] md:text-6xl">
             <em className="font-normal italic text-accent">Flavor</em> of the week
           </h2>
-          <p className="mt-6 font-display text-3xl md:text-4xl">{flavorOfTheWeek.name}</p>
+          <p className="mt-6 font-display text-3xl md:text-4xl">{weekly.name}</p>
           <p className="mt-5 max-w-md text-base leading-relaxed text-muted-foreground">
-            {flavorOfTheWeek.description}
+            {weekly.description}
           </p>
           <a
             href="#hours"
@@ -218,14 +300,18 @@ function FlavorOfTheWeek() {
   );
 }
 
-function Flavors() {
+function Flavors({ staples, weekly }: { staples: DbFlavor[]; weekly: DbFlavor | null }) {
+  const items = [
+    ...staples.map((f) => ({ ...f, tag: "Always on the menu" })),
+    ...(weekly ? [{ ...weekly, tag: "This week's rotating flavor" }] : []),
+  ];
   return (
     <section id="flavors" className="border-t border-border bg-secondary/40 py-20 md:py-28">
       <div className="mx-auto max-w-6xl px-6">
         <div className="mb-14 flex flex-col items-start justify-between gap-4 md:flex-row md:items-end">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">The Menu</p>
-            <h2 className="mt-3 font-display text-4xl md:text-5xl">Two staples. One surprise.</h2>
+            <h2 className="mt-3 font-display text-4xl md:text-5xl">Staples & this week's pick.</h2>
           </div>
           <p className="max-w-sm text-sm text-muted-foreground">
             Sold by the slice only — $7 each. Pay ahead by DM to reserve, or in
@@ -234,26 +320,91 @@ function Flavors() {
         </div>
 
         <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-          {FLAVORS.map((f) => (
-            <article key={f.name} className="group flex flex-col">
-              <div className="overflow-hidden rounded-2xl bg-background">
-                <img
-                  src={f.img}
-                  alt={f.name}
-                  loading="lazy"
-                  width={900}
-                  height={900}
-                  className="aspect-square w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
-                />
-              </div>
-              <p className="mt-5 text-[10px] font-semibold uppercase tracking-[0.22em] text-accent">
-                {f.tag}
-              </p>
-              <h3 className="mt-2 font-display text-2xl">{f.name}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{f.desc}</p>
-            </article>
-          ))}
+          {items.length === 0 ? (
+            <p className="col-span-full py-8 text-center text-sm italic text-muted-foreground">
+              Menu coming soon.
+            </p>
+          ) : (
+            items.map((f) => (
+              <article key={f.id} className="group flex flex-col">
+                <div className="overflow-hidden rounded-2xl bg-background">
+                  <img
+                    src={imageForFlavor(f)}
+                    alt={f.name}
+                    loading="lazy"
+                    width={900}
+                    height={900}
+                    className="aspect-square w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                  />
+                </div>
+                <p className="mt-5 text-[10px] font-semibold uppercase tracking-[0.22em] text-accent">
+                  {f.tag}
+                </p>
+                <h3 className="mt-2 font-display text-2xl">{f.name}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{f.description}</p>
+              </article>
+            ))
+          )}
         </div>
+      </div>
+    </section>
+  );
+}
+
+function NewsletterSubscribe() {
+  const [email, setEmail] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [done, setDone] = useState(false);
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    const value = email.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+      return toast.error("Please enter a valid email.");
+    }
+    setBusy(true);
+    const { error } = await supabase.from("newsletter_subscribers").insert({ email: value });
+    setBusy(false);
+    if (error) {
+      if (error.code === "23505") {
+        setDone(true);
+        return toast.success("You're already on the list — thanks!");
+      }
+      return toast.error("Couldn't subscribe. Try again in a moment.");
+    }
+    setDone(true);
+    setEmail("");
+    toast.success("You're on the list! 🎉");
+  }
+
+  return (
+    <section id="subscribe" className="border-t border-border bg-blush/40 py-20 md:py-24">
+      <div className="mx-auto max-w-3xl px-6 text-center">
+        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-sage">Stay in the loop</p>
+        <h2 className="mt-3 font-display text-4xl md:text-5xl">
+          Get the <em className="italic text-accent">weekly flavor</em> in your inbox.
+        </h2>
+        <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-muted-foreground">
+          One friendly email a week from Andie — this week's flavor, bake-day updates, and
+          the occasional cheesecake secret. Unsubscribe anytime.
+        </p>
+        <form onSubmit={submit} className="mx-auto mt-8 flex max-w-md flex-col gap-3 sm:flex-row">
+          <input
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="you@example.com"
+            className="flex-1 rounded-full border border-input bg-background px-5 py-3 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
+          />
+          <button
+            type="submit"
+            disabled={busy || done}
+            className="rounded-full bg-accent px-6 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent-foreground transition-colors hover:bg-primary disabled:opacity-60"
+          >
+            {done ? "Subscribed ✓" : busy ? "…" : "Subscribe"}
+          </button>
+        </form>
       </div>
     </section>
   );
@@ -433,8 +584,14 @@ function BakerSection() {
   );
 }
 
-function FlavorVote() {
-  const flavors = site.voteFlavors;
+function FlavorVote({ options }: { options: DbFlavor[] }) {
+  // Merge DB vote-options with the site.ts config so we still get emojis.
+  const flavors = options.length
+    ? options.map((o) => {
+        const cfg = site.voteFlavors.find((f) => f.slug === o.slug);
+        return { slug: o.slug, label: o.name, emoji: cfg?.emoji ?? "🍰" };
+      })
+    : site.voteFlavors;
   const [counts, setCounts] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
