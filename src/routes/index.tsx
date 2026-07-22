@@ -584,8 +584,14 @@ function BakerSection() {
   );
 }
 
-function FlavorVote() {
-  const flavors = site.voteFlavors;
+function FlavorVote({ options }: { options: DbFlavor[] }) {
+  // Merge DB vote-options with the site.ts config so we still get emojis.
+  const flavors = options.length
+    ? options.map((o) => {
+        const cfg = site.voteFlavors.find((f) => f.slug === o.slug);
+        return { slug: o.slug, label: o.name, emoji: cfg?.emoji ?? "🍰" };
+      })
+    : site.voteFlavors;
   const [counts, setCounts] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
