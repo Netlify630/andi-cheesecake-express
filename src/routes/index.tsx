@@ -875,10 +875,10 @@ function ReviewForm() {
           className="mt-0.5 h-4 w-4 accent-[oklch(0.62_0.11_60)]"
         />
         <span className="text-sm leading-relaxed">
-          <span className="font-medium">It's okay to share this review publicly</span>
+          <span className="font-medium">Andie may share this review publicly if she chooses</span>
           <span className="mt-1 block text-xs text-muted-foreground">
-            Check this box to let Andielicious show your review on the website and on
-            social media. Leave it unchecked to send Andie private feedback.
+            Check this box to give Andie permission to feature your review on the website
+            or social media. Leave it unchecked and it stays completely private — just for her.
           </span>
         </span>
       </label>
