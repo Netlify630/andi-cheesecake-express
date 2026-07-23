@@ -6,7 +6,7 @@ export const site = {
   location: {
     addressLine1: "Your street address",
     addressLine2: "City, State ZIP",
-    note: "Look for the little pink fridge on the porch.",
+    note: "Look for the red fridge on the dirt parking spot.",
     mapsUrl: "",
   },
   payment: {
