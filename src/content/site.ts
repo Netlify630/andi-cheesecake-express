@@ -3,6 +3,9 @@
 // ─────────────────────────────────────────────────────────────
 
 export const site = {
+  // Opening date — shown in the hero + footer. Edit anytime.
+  openingDate: "Opening Spring 2026",
+
   location: {
     addressLine1: "Your street address",
     addressLine2: "City, State ZIP",
@@ -13,7 +16,7 @@ export const site = {
     methods: "Venmo or cash only",
     venmoHandle: "@Andielicious",
   },
-  contactEmail: "hello@andielicious.com",
+  contactEmail: "andieliciouscheesecake@gmail.com",
 
   // Baker bio — swap in your own photo at src/assets/baker.jpg and update
   // the import in src/routes/index.tsx (BakerSection).
