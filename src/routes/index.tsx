@@ -724,75 +724,29 @@ function FlavorVote({ options }: { options: DbFlavor[] }) {
 
 
 function Reviews() {
-  const [reviews, setReviews] = useState<Review[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    let ignore = false;
-    supabase
-      .from("reviews")
-      .select("id,name,rating,comment,created_at")
-      .order("created_at", { ascending: false })
-      .limit(12)
-      .then(({ data, error }) => {
-        if (ignore) return;
-        if (error) console.error(error);
-        setReviews((data as Review[]) ?? []);
-        setLoading(false);
-      });
-    return () => {
-      ignore = true;
-    };
-  }, []);
-
   return (
     <section id="reviews" className="py-20 md:py-28">
-      <div className="mx-auto max-w-6xl px-6">
-        <div className="mb-14 flex flex-col items-start justify-between gap-4 md:flex-row md:items-end">
-          <div>
+      <div className="mx-auto max-w-3xl px-6">
+        <Reveal>
+          <div className="mb-10 text-center">
             <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">Kind Words</p>
-            <h2 className="mt-3 font-display text-4xl md:text-5xl">From the neighborhood.</h2>
-          </div>
-          <p className="max-w-sm text-sm text-muted-foreground">
-            Have you tried one? Leave a note below — and let us know if we can share it here.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          {loading ? (
-            Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="h-40 animate-pulse rounded-2xl bg-secondary" />
-            ))
-          ) : reviews.length === 0 ? (
-            <p className="col-span-full py-8 text-center text-sm italic text-muted-foreground">
-              Be the first to leave a review.
+            <h2 className="mt-3 font-display text-4xl md:text-5xl">
+              Leave <em className="italic text-accent">Andie</em> a note.
+            </h2>
+            <p className="mx-auto mt-4 max-w-md text-sm text-muted-foreground">
+              Reviews go straight to Andie — nothing shows up on the site unless she picks it to feature later.
             </p>
-          ) : (
-            reviews.map((r) => <ReviewCard key={r.id} review={r} />)
-          )}
-        </div>
+          </div>
+        </Reveal>
 
-        <ReviewForm
-          onSubmitted={(r) => {
-            if (r) setReviews((prev) => [r, ...prev]);
-          }}
-        />
+        <Reveal delay={80}>
+          <ReviewForm />
+        </Reveal>
       </div>
     </section>
   );
 }
 
-function ReviewCard({ review }: { review: Review }) {
-  return (
-    <article className="flex flex-col rounded-2xl border border-border bg-card p-6">
-      <Stars value={review.rating} />
-      <p className="mt-4 font-display text-lg italic leading-snug">"{review.comment}"</p>
-      <p className="mt-auto pt-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-        — {review.name}
-      </p>
-    </article>
-  );
-}
 
 function Stars({ value, onChange }: { value: number; onChange?: (n: number) => void }) {
   return (
