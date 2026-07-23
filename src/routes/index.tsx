@@ -268,17 +268,19 @@ function FlavorOfTheWeek({ weekly }: { weekly: DbFlavor | null }) {
   return (
     <section id="flavor-of-the-week" className="border-t border-border py-20 md:py-28">
       <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 px-6 md:grid-cols-[1fr_1.05fr]">
-        <div className="relative order-2 md:order-1">
-          <div className="absolute -inset-5 -z-10 rounded-[2rem] bg-secondary" />
-          <img
-            src={imageForFlavor(weekly)}
-            alt={weekly.name}
-            width={1200}
-            height={1200}
-            className="aspect-square w-full rounded-3xl object-cover shadow-xl"
-          />
-        </div>
-        <div className="order-1 md:order-2">
+        <Reveal className="order-2 md:order-1">
+          <div className="relative">
+            <div className="absolute -inset-5 -z-10 rounded-[2rem] bg-secondary" />
+            <img
+              src={imageForFlavor(weekly)}
+              alt={weekly.name}
+              width={1200}
+              height={1200}
+              className="aspect-square w-full rounded-3xl object-cover shadow-xl"
+            />
+          </div>
+        </Reveal>
+        <Reveal delay={120} className="order-1 md:order-2">
           <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">
             {weekly.week_label || "This week only"}
           </p>
@@ -295,7 +297,7 @@ function FlavorOfTheWeek({ weekly }: { weekly: DbFlavor | null }) {
           >
             Reserve a slice
           </a>
-        </div>
+        </Reveal>
       </div>
     </section>
   );
@@ -326,24 +328,26 @@ function Flavors({ staples, weekly }: { staples: DbFlavor[]; weekly: DbFlavor | 
               Menu coming soon.
             </p>
           ) : (
-            items.map((f) => (
-              <article key={f.id} className="group flex flex-col">
-                <div className="overflow-hidden rounded-2xl bg-background">
-                  <img
-                    src={imageForFlavor(f)}
-                    alt={f.name}
-                    loading="lazy"
-                    width={900}
-                    height={900}
-                    className="aspect-square w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
-                  />
-                </div>
-                <p className="mt-5 text-[10px] font-semibold uppercase tracking-[0.22em] text-accent">
-                  {f.tag}
-                </p>
-                <h3 className="mt-2 font-display text-2xl">{f.name}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{f.description}</p>
-              </article>
+            items.map((f, i) => (
+              <Reveal key={f.id} delay={i * 90}>
+                <article className="group flex flex-col">
+                  <div className="overflow-hidden rounded-2xl bg-background">
+                    <img
+                      src={imageForFlavor(f)}
+                      alt={f.name}
+                      loading="lazy"
+                      width={900}
+                      height={900}
+                      className="aspect-square w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                    />
+                  </div>
+                  <p className="mt-5 text-[10px] font-semibold uppercase tracking-[0.22em] text-accent">
+                    {f.tag}
+                  </p>
+                  <h3 className="mt-2 font-display text-2xl">{f.name}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{f.description}</p>
+                </article>
+              </Reveal>
             ))
           )}
         </div>
