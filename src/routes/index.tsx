@@ -777,7 +777,7 @@ function Stars({ value, onChange }: { value: number; onChange?: (n: number) => v
   );
 }
 
-function ReviewForm({ onSubmitted }: { onSubmitted: (r: Review | null) => void }) {
+function ReviewForm() {
   const [name, setName] = useState("");
   const [comment, setComment] = useState("");
   const [rating, setRating] = useState(5);
@@ -791,16 +791,14 @@ function ReviewForm({ onSubmitted }: { onSubmitted: (r: Review | null) => void }
       return;
     }
     setSubmitting(true);
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from("reviews")
       .insert({
         name: name.trim(),
         rating,
         comment: comment.trim(),
         public_consent: publicConsent,
-      })
-      .select("id,name,rating,comment,created_at,public_consent")
-      .single();
+      });
     setSubmitting(false);
 
     if (error) {
@@ -808,21 +806,13 @@ function ReviewForm({ onSubmitted }: { onSubmitted: (r: Review | null) => void }
       return;
     }
 
-    toast.success(
-      publicConsent
-        ? "Thank you! Your review is now on the site."
-        : "Thank you! Andie will read this — it won't be shown publicly."
-    );
+    toast.success("Thank you! Andie will read this — she'll decide what to feature on the site.");
     setName("");
     setComment("");
     setRating(5);
     setPublicConsent(false);
-    if (publicConsent && data) {
-      onSubmitted(data as Review);
-    } else {
-      onSubmitted(null);
-    }
   }
+
 
   return (
     <form
