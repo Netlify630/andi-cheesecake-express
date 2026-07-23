@@ -12,6 +12,7 @@ import flavorChocolate from "@/assets/flavor-chocolate.jpg";
 import bakerImg from "@/assets/baker.jpg";
 import flavorRotatingImg from "@/assets/flavor-rotating.jpg";
 import { site } from "@/content/site";
+import { Reveal } from "@/components/Reveal";
 
 export const Route = createFileRoute("/")({
   component: Home,
@@ -138,7 +139,7 @@ function Nav() {
           <span className="flex flex-col leading-none">
             <span className="font-display text-2xl tracking-tight text-accent">Andielicious</span>
             <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-sage">
-              Cheesecake · Since 2024
+              Cheesecake
             </span>
           </span>
         </a>
@@ -201,7 +202,7 @@ function Hero() {
             />
             <div className="flex flex-col">
               <span className="text-[10px] font-semibold uppercase tracking-[0.35em] text-sage">
-                Est. 2024 · Baked on Thursdays
+                {site.openingDate} · Baked on Thursdays
               </span>
               <span className="font-display text-3xl italic text-accent md:text-4xl">
                 Andielicious
@@ -248,12 +249,12 @@ function Hero() {
             height={1600}
             className="aspect-[7/8] w-full rounded-3xl object-cover shadow-xl"
           />
-          <div className="absolute -bottom-6 left-6 max-w-[220px] rounded-2xl border border-berry/30 bg-background p-5 shadow-lg">
+          <div className="absolute -bottom-6 left-6 max-w-[240px] rounded-2xl border border-berry/30 bg-background p-5 shadow-lg">
             <p className="font-display text-lg italic leading-snug text-accent">
-              "Tastes homemade because it is."
+              {site.openingDate}
             </p>
             <p className="mt-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-              — a happy neighbor
+              A new little cheesecake fridge on the block
             </p>
           </div>
         </div>
@@ -958,7 +959,7 @@ function Footer() {
           <div>
             <p className="font-display text-xl">Andielicious Cheesecake</p>
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-              Since 2024
+              {site.openingDate}
             </p>
           </div>
         </div>
