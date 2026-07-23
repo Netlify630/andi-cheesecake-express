@@ -12,6 +12,7 @@ import flavorChocolate from "@/assets/flavor-chocolate.jpg";
 import bakerImg from "@/assets/baker.jpg";
 import flavorRotatingImg from "@/assets/flavor-rotating.jpg";
 import { site } from "@/content/site";
+import { Reveal } from "@/components/Reveal";
 
 export const Route = createFileRoute("/")({
   component: Home,
@@ -138,7 +139,7 @@ function Nav() {
           <span className="flex flex-col leading-none">
             <span className="font-display text-2xl tracking-tight text-accent">Andielicious</span>
             <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-sage">
-              Cheesecake · Since 2024
+              Cheesecake
             </span>
           </span>
         </a>
@@ -201,7 +202,7 @@ function Hero() {
             />
             <div className="flex flex-col">
               <span className="text-[10px] font-semibold uppercase tracking-[0.35em] text-sage">
-                Est. 2024 · Baked on Thursdays
+                {site.openingDate} · Baked on Thursdays
               </span>
               <span className="font-display text-3xl italic text-accent md:text-4xl">
                 Andielicious
@@ -248,12 +249,12 @@ function Hero() {
             height={1600}
             className="aspect-[7/8] w-full rounded-3xl object-cover shadow-xl"
           />
-          <div className="absolute -bottom-6 left-6 max-w-[220px] rounded-2xl border border-berry/30 bg-background p-5 shadow-lg">
+          <div className="absolute -bottom-6 left-6 max-w-[240px] rounded-2xl border border-berry/30 bg-background p-5 shadow-lg">
             <p className="font-display text-lg italic leading-snug text-accent">
-              "Tastes homemade because it is."
+              {site.openingDate}
             </p>
             <p className="mt-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-              — a happy neighbor
+              A new little cheesecake fridge on the block
             </p>
           </div>
         </div>
@@ -267,17 +268,19 @@ function FlavorOfTheWeek({ weekly }: { weekly: DbFlavor | null }) {
   return (
     <section id="flavor-of-the-week" className="border-t border-border py-20 md:py-28">
       <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 px-6 md:grid-cols-[1fr_1.05fr]">
-        <div className="relative order-2 md:order-1">
-          <div className="absolute -inset-5 -z-10 rounded-[2rem] bg-secondary" />
-          <img
-            src={imageForFlavor(weekly)}
-            alt={weekly.name}
-            width={1200}
-            height={1200}
-            className="aspect-square w-full rounded-3xl object-cover shadow-xl"
-          />
-        </div>
-        <div className="order-1 md:order-2">
+        <Reveal className="order-2 md:order-1">
+          <div className="relative">
+            <div className="absolute -inset-5 -z-10 rounded-[2rem] bg-secondary" />
+            <img
+              src={imageForFlavor(weekly)}
+              alt={weekly.name}
+              width={1200}
+              height={1200}
+              className="aspect-square w-full rounded-3xl object-cover shadow-xl"
+            />
+          </div>
+        </Reveal>
+        <Reveal delay={120} className="order-1 md:order-2">
           <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">
             {weekly.week_label || "This week only"}
           </p>
@@ -294,7 +297,7 @@ function FlavorOfTheWeek({ weekly }: { weekly: DbFlavor | null }) {
           >
             Reserve a slice
           </a>
-        </div>
+        </Reveal>
       </div>
     </section>
   );
@@ -325,24 +328,26 @@ function Flavors({ staples, weekly }: { staples: DbFlavor[]; weekly: DbFlavor | 
               Menu coming soon.
             </p>
           ) : (
-            items.map((f) => (
-              <article key={f.id} className="group flex flex-col">
-                <div className="overflow-hidden rounded-2xl bg-background">
-                  <img
-                    src={imageForFlavor(f)}
-                    alt={f.name}
-                    loading="lazy"
-                    width={900}
-                    height={900}
-                    className="aspect-square w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
-                  />
-                </div>
-                <p className="mt-5 text-[10px] font-semibold uppercase tracking-[0.22em] text-accent">
-                  {f.tag}
-                </p>
-                <h3 className="mt-2 font-display text-2xl">{f.name}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{f.description}</p>
-              </article>
+            items.map((f, i) => (
+              <Reveal key={f.id} delay={i * 90}>
+                <article className="group flex flex-col">
+                  <div className="overflow-hidden rounded-2xl bg-background">
+                    <img
+                      src={imageForFlavor(f)}
+                      alt={f.name}
+                      loading="lazy"
+                      width={900}
+                      height={900}
+                      className="aspect-square w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                    />
+                  </div>
+                  <p className="mt-5 text-[10px] font-semibold uppercase tracking-[0.22em] text-accent">
+                    {f.tag}
+                  </p>
+                  <h3 className="mt-2 font-display text-2xl">{f.name}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{f.description}</p>
+                </article>
+              </Reveal>
             ))
           )}
         </div>
@@ -723,75 +728,29 @@ function FlavorVote({ options }: { options: DbFlavor[] }) {
 
 
 function Reviews() {
-  const [reviews, setReviews] = useState<Review[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    let ignore = false;
-    supabase
-      .from("reviews")
-      .select("id,name,rating,comment,created_at")
-      .order("created_at", { ascending: false })
-      .limit(12)
-      .then(({ data, error }) => {
-        if (ignore) return;
-        if (error) console.error(error);
-        setReviews((data as Review[]) ?? []);
-        setLoading(false);
-      });
-    return () => {
-      ignore = true;
-    };
-  }, []);
-
   return (
     <section id="reviews" className="py-20 md:py-28">
-      <div className="mx-auto max-w-6xl px-6">
-        <div className="mb-14 flex flex-col items-start justify-between gap-4 md:flex-row md:items-end">
-          <div>
+      <div className="mx-auto max-w-3xl px-6">
+        <Reveal>
+          <div className="mb-10 text-center">
             <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">Kind Words</p>
-            <h2 className="mt-3 font-display text-4xl md:text-5xl">From the neighborhood.</h2>
-          </div>
-          <p className="max-w-sm text-sm text-muted-foreground">
-            Have you tried one? Leave a note below — and let us know if we can share it here.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          {loading ? (
-            Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="h-40 animate-pulse rounded-2xl bg-secondary" />
-            ))
-          ) : reviews.length === 0 ? (
-            <p className="col-span-full py-8 text-center text-sm italic text-muted-foreground">
-              Be the first to leave a review.
+            <h2 className="mt-3 font-display text-4xl md:text-5xl">
+              Leave <em className="italic text-accent">Andie</em> a note.
+            </h2>
+            <p className="mx-auto mt-4 max-w-md text-sm text-muted-foreground">
+              Reviews go straight to Andie — nothing shows up on the site unless she picks it to feature later.
             </p>
-          ) : (
-            reviews.map((r) => <ReviewCard key={r.id} review={r} />)
-          )}
-        </div>
+          </div>
+        </Reveal>
 
-        <ReviewForm
-          onSubmitted={(r) => {
-            if (r) setReviews((prev) => [r, ...prev]);
-          }}
-        />
+        <Reveal delay={80}>
+          <ReviewForm />
+        </Reveal>
       </div>
     </section>
   );
 }
 
-function ReviewCard({ review }: { review: Review }) {
-  return (
-    <article className="flex flex-col rounded-2xl border border-border bg-card p-6">
-      <Stars value={review.rating} />
-      <p className="mt-4 font-display text-lg italic leading-snug">"{review.comment}"</p>
-      <p className="mt-auto pt-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-        — {review.name}
-      </p>
-    </article>
-  );
-}
 
 function Stars({ value, onChange }: { value: number; onChange?: (n: number) => void }) {
   return (
@@ -822,7 +781,7 @@ function Stars({ value, onChange }: { value: number; onChange?: (n: number) => v
   );
 }
 
-function ReviewForm({ onSubmitted }: { onSubmitted: (r: Review | null) => void }) {
+function ReviewForm() {
   const [name, setName] = useState("");
   const [comment, setComment] = useState("");
   const [rating, setRating] = useState(5);
@@ -836,16 +795,14 @@ function ReviewForm({ onSubmitted }: { onSubmitted: (r: Review | null) => void }
       return;
     }
     setSubmitting(true);
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from("reviews")
       .insert({
         name: name.trim(),
         rating,
         comment: comment.trim(),
         public_consent: publicConsent,
-      })
-      .select("id,name,rating,comment,created_at,public_consent")
-      .single();
+      });
     setSubmitting(false);
 
     if (error) {
@@ -853,21 +810,13 @@ function ReviewForm({ onSubmitted }: { onSubmitted: (r: Review | null) => void }
       return;
     }
 
-    toast.success(
-      publicConsent
-        ? "Thank you! Your review is now on the site."
-        : "Thank you! Andie will read this — it won't be shown publicly."
-    );
+    toast.success("Thank you! Andie will read this — she'll decide what to feature on the site.");
     setName("");
     setComment("");
     setRating(5);
     setPublicConsent(false);
-    if (publicConsent && data) {
-      onSubmitted(data as Review);
-    } else {
-      onSubmitted(null);
-    }
   }
+
 
   return (
     <form
@@ -930,10 +879,10 @@ function ReviewForm({ onSubmitted }: { onSubmitted: (r: Review | null) => void }
           className="mt-0.5 h-4 w-4 accent-[oklch(0.62_0.11_60)]"
         />
         <span className="text-sm leading-relaxed">
-          <span className="font-medium">It's okay to share this review publicly</span>
+          <span className="font-medium">Andie may share this review publicly if she chooses</span>
           <span className="mt-1 block text-xs text-muted-foreground">
-            Check this box to let Andielicious show your review on the website and on
-            social media. Leave it unchecked to send Andie private feedback.
+            Check this box to give Andie permission to feature your review on the website
+            or social media. Leave it unchecked and it stays completely private — just for her.
           </span>
         </span>
       </label>
@@ -958,7 +907,7 @@ function Footer() {
           <div>
             <p className="font-display text-xl">Andielicious Cheesecake</p>
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-              Since 2024
+              {site.openingDate}
             </p>
           </div>
         </div>
