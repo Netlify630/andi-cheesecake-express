@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import { Star } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -15,6 +15,24 @@ import { site } from "@/content/site";
 import { Reveal } from "@/components/Reveal";
 
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "Andielicious Cheesecake · Self-Serve Slices" },
+      {
+        name: "description",
+        content:
+          "Local self-serve cheesecake slices from Andielicious. Baked on Thursdays, open Friday through Tuesday, with weekly flavors and reviews.",
+      },
+      { property: "og:title", content: "Andielicious Cheesecake" },
+      {
+        property: "og:description",
+        content:
+          "Small-batch self-serve cheesecake slices, baked fresh on Thursdays and available Friday through Tuesday.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
   component: Home,
 });
 
@@ -291,7 +309,7 @@ function OpeningDateSign() {
                 "--confetti-y": `${piece.y}px`,
                 "--confetti-r": `${piece.r}deg`,
                 animationDelay: `${piece.delay}ms`,
-              } as React.CSSProperties
+            } as CSSProperties
             }
           />
         ))}
