@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { toast } from "sonner";
@@ -34,23 +34,42 @@ function AuthPage() {
     });
   }, [navigate]);
 
-  async function handleEmail(e: React.FormEvent) {
+  async function handleEmail(e: FormEvent) {
     e.preventDefault();
+    const trimmedEmail = email.trim();
     setBusy(true);
     if (mode === "signup") {
       const { error } = await supabase.auth.signUp({
-        email: email.trim(),
+        email: trimmedEmail,
         password,
         options: { emailRedirectTo: window.location.origin },
       });
+      if (error) {
+        const alreadyExists = error.message.toLowerCase().includes("already") || error.message.toLowerCase().includes("registered");
+        if (alreadyExists) {
+          const { error: signInError } = await supabase.auth.signInWithPassword({
+            email: trimmedEmail,
+            password,
+          });
+          setBusy(false);
+          if (signInError) {
+            return toast.error("That Gmail already has an account. Sign in with Google, or use the same password you first created.");
+          }
+          toast.success("You're signed in.");
+          router.invalidate();
+          navigate({ to: "/" });
+          return;
+        }
+        setBusy(false);
+        return toast.error(error.message);
+      }
       setBusy(false);
-      if (error) return toast.error(error.message);
       toast.success("Welcome! You're signed in.");
       router.invalidate();
       navigate({ to: "/" });
     } else {
       const { error } = await supabase.auth.signInWithPassword({
-        email: email.trim(),
+        email: trimmedEmail,
         password,
       });
       setBusy(false);

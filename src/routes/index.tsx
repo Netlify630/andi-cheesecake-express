@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import { Star } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -15,16 +15,26 @@ import { site } from "@/content/site";
 import { Reveal } from "@/components/Reveal";
 
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "Andielicious Cheesecake · Self-Serve Slices" },
+      {
+        name: "description",
+        content:
+          "Local self-serve cheesecake slices from Andielicious. Baked on Thursdays, open Friday through Tuesday, with weekly flavors and reviews.",
+      },
+      { property: "og:title", content: "Andielicious Cheesecake" },
+      {
+        property: "og:description",
+        content:
+          "Small-batch self-serve cheesecake slices, baked fresh on Thursdays and available Friday through Tuesday.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
   component: Home,
 });
-
-type Review = {
-  id: string;
-  name: string;
-  rating: number;
-  comment: string;
-  created_at: string;
-};
 
 type DbFlavor = {
   id: string;
@@ -98,6 +108,9 @@ function Nav() {
   useEffect(() => {
     let ignore = false;
     async function refresh() {
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (!ignore) setEmail(sessionData.session?.user.email ?? null);
+
       const { data } = await supabase.auth.getUser();
       if (ignore) return;
       setEmail(data.user?.email ?? null);
@@ -113,8 +126,16 @@ function Nav() {
       }
     }
     refresh();
-    const { data: sub } = supabase.auth.onAuthStateChange((event) => {
-      if (event === "SIGNED_IN" || event === "SIGNED_OUT" || event === "USER_UPDATED") refresh();
+    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_OUT") {
+        setEmail(null);
+        setIsAdmin(false);
+        return;
+      }
+      if (event === "INITIAL_SESSION" || event === "SIGNED_IN" || event === "USER_UPDATED" || event === "TOKEN_REFRESHED") {
+        setEmail(session?.user.email ?? null);
+        refresh();
+      }
     });
     return () => {
       ignore = true;
@@ -249,17 +270,57 @@ function Hero() {
             height={1600}
             className="aspect-[7/8] w-full rounded-3xl object-cover shadow-xl"
           />
-          <div className="absolute -bottom-6 left-6 max-w-[240px] rounded-2xl border border-berry/30 bg-background p-5 shadow-lg">
-            <p className="font-display text-lg italic leading-snug text-accent">
-              {site.openingDate}
-            </p>
-            <p className="mt-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-              A new little cheesecake fridge on the block
-            </p>
-          </div>
+          <OpeningDateSign />
         </div>
       </div>
     </section>
+  );
+}
+
+function OpeningDateSign() {
+  const [pieces, setPieces] = useState<Array<{ id: number; x: number; y: number; r: number; delay: number; token: string }>>([]);
+
+  useEffect(() => {
+    const colors = ["bg-berry", "bg-sage", "bg-butter", "bg-accent"];
+    setPieces(
+      Array.from({ length: 26 }, (_, id) => ({
+        id,
+        x: Math.round((Math.random() - 0.5) * 260),
+        y: Math.round(-60 - Math.random() * 150),
+        r: Math.round((Math.random() - 0.5) * 220),
+        delay: Math.round(Math.random() * 140),
+        token: colors[id % colors.length],
+      })),
+    );
+    const timer = window.setTimeout(() => setPieces([]), 1500);
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  return (
+    <div className="absolute -bottom-6 left-6 max-w-[240px] rounded-2xl border border-berry/30 bg-background p-5 shadow-lg">
+      <div className="pointer-events-none absolute inset-x-0 top-2 overflow-visible" aria-hidden>
+        {pieces.map((piece) => (
+          <span
+            key={piece.id}
+            className={`confetti-piece absolute left-1/2 top-1/2 h-2 w-1 rounded-full ${piece.token}`}
+            style={
+              {
+                "--confetti-x": `${piece.x}px`,
+                "--confetti-y": `${piece.y}px`,
+                "--confetti-r": `${piece.r}deg`,
+                animationDelay: `${piece.delay}ms`,
+            } as CSSProperties
+            }
+          />
+        ))}
+      </div>
+      <p className="font-display text-lg italic leading-snug text-accent">
+        {site.openingDate}
+      </p>
+      <p className="mt-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+        A new little cheesecake fridge on the block
+      </p>
+    </div>
   );
 }
 
