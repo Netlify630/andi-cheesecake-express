@@ -45,6 +45,7 @@ type DbFlavor = {
   category: "staple" | "weekly" | "vote_option";
   week_label: string | null;
   position: number;
+  sold_out?: boolean;
 };
 
 // Fallback local images by slug when admin hasn't set an image_url.
