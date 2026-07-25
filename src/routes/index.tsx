@@ -338,8 +338,9 @@ function FlavorOfTheWeek({ weekly }: { weekly: DbFlavor | null }) {
               alt={weekly.name}
               width={1200}
               height={1200}
-              className="aspect-square w-full rounded-3xl object-cover shadow-xl"
+              className={`aspect-square w-full rounded-3xl object-cover shadow-xl ${weekly.sold_out ? "opacity-60 grayscale" : ""}`}
             />
+            <StockBadge soldOut={!!weekly.sold_out} className="absolute left-4 top-4" />
           </div>
         </Reveal>
         <Reveal delay={120} className="order-1 md:order-2">
