@@ -70,7 +70,7 @@ function Home() {
     // Load flavors from DB (admin-editable)
     supabase
       .from("flavors")
-      .select("id,slug,name,description,image_url,category,week_label,position")
+      .select("id,slug,name,description,image_url,category,week_label,position,sold_out")
       .eq("active", true)
       .order("position", { ascending: true })
       .then(({ data, error }) => {
