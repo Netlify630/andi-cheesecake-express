@@ -315,12 +315,34 @@ function FlavorsTab() {
                     }`}
                   >
                     <div className="min-w-0 flex-1">
-                      <p className="font-display text-lg">{f.name}</p>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <p className="font-display text-lg">{f.name}</p>
+                        <span
+                          className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-semibold uppercase tracking-widest ${
+                            f.sold_out
+                              ? "bg-ink/10 text-ink"
+                              : "bg-sage/15 text-sage"
+                          }`}
+                        >
+                          <span className={`h-1.5 w-1.5 rounded-full ${f.sold_out ? "bg-berry" : "bg-sage"}`} />
+                          {f.sold_out ? "Sold out" : "In stock"}
+                        </span>
+                      </div>
                       {f.description && (
                         <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{f.description}</p>
                       )}
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        onClick={() => toggleSoldOut(f)}
+                        className={`rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-widest transition-colors ${
+                          f.sold_out
+                            ? "bg-sage text-cream hover:bg-sage/90"
+                            : "bg-berry text-cream hover:bg-berry/90"
+                        }`}
+                      >
+                        {f.sold_out ? "Mark in stock" : "Mark sold out"}
+                      </button>
                       <button
                         onClick={() => toggleActive(f)}
                         className="rounded-full border border-border px-3 py-1 text-[10px] font-semibold uppercase tracking-widest hover:bg-secondary"
