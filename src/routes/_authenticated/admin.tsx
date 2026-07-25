@@ -256,6 +256,13 @@ function FlavorsTab() {
     load();
   }
 
+  async function toggleSoldOut(f: Flavor) {
+    const { error } = await supabase.from("flavors").update({ sold_out: !f.sold_out }).eq("id", f.id);
+    if (error) return toast.error(error.message);
+    toast.success(!f.sold_out ? `${f.name} marked sold out` : `${f.name} back in stock`);
+    load();
+  }
+
   async function remove(f: Flavor) {
     if (!confirm(`Delete "${f.name}"?`)) return;
     const { error } = await supabase.from("flavors").delete().eq("id", f.id);
