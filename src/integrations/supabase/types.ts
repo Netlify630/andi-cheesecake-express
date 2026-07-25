@@ -43,6 +43,7 @@ export type Database = {
           name: string
           position: number
           slug: string
+          sold_out: boolean
           updated_at: string
           week_label: string | null
         }
@@ -56,6 +57,7 @@ export type Database = {
           name: string
           position?: number
           slug: string
+          sold_out?: boolean
           updated_at?: string
           week_label?: string | null
         }
@@ -69,6 +71,7 @@ export type Database = {
           name?: string
           position?: number
           slug?: string
+          sold_out?: boolean
           updated_at?: string
           week_label?: string | null
         }

@@ -45,6 +45,7 @@ type DbFlavor = {
   category: "staple" | "weekly" | "vote_option";
   week_label: string | null;
   position: number;
+  sold_out?: boolean;
 };
 
 // Fallback local images by slug when admin hasn't set an image_url.
@@ -69,7 +70,7 @@ function Home() {
     // Load flavors from DB (admin-editable)
     supabase
       .from("flavors")
-      .select("id,slug,name,description,image_url,category,week_label,position")
+      .select("id,slug,name,description,image_url,category,week_label,position,sold_out")
       .eq("active", true)
       .order("position", { ascending: true })
       .then(({ data, error }) => {
@@ -277,32 +278,49 @@ function Hero() {
   );
 }
 
+function StockBadge({ soldOut, className = "" }: { soldOut: boolean; className?: string }) {
+  return (
+    <span
+      className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.22em] shadow-sm backdrop-blur ${
+        soldOut
+          ? "bg-ink/85 text-cream"
+          : "bg-sage/90 text-cream"
+      } ${className}`}
+    >
+      <span className={`h-1.5 w-1.5 rounded-full ${soldOut ? "bg-berry" : "bg-butter"}`} />
+      {soldOut ? "Sold out" : "In stock"}
+    </span>
+  );
+}
+
 function OpeningDateSign() {
-  const [pieces, setPieces] = useState<Array<{ id: number; x: number; y: number; r: number; delay: number; token: string }>>([]);
+  const [pieces, setPieces] = useState<Array<{ id: number; x: number; y: number; r: number; delay: number; token: string; size: string }>>([]);
 
   useEffect(() => {
-    const colors = ["bg-berry", "bg-sage", "bg-butter", "bg-accent"];
+    const colors = ["bg-berry", "bg-sage", "bg-butter", "bg-accent", "bg-blush", "bg-caramel"];
+    const sizes = ["h-2 w-1", "h-1.5 w-1.5 rounded-full", "h-2.5 w-1", "h-1 w-2"];
     setPieces(
-      Array.from({ length: 26 }, (_, id) => ({
+      Array.from({ length: 70 }, (_, id) => ({
         id,
-        x: Math.round((Math.random() - 0.5) * 260),
-        y: Math.round(-60 - Math.random() * 150),
-        r: Math.round((Math.random() - 0.5) * 220),
-        delay: Math.round(Math.random() * 140),
+        x: Math.round((Math.random() - 0.5) * 460),
+        y: Math.round(-90 - Math.random() * 260),
+        r: Math.round((Math.random() - 0.5) * 540),
+        delay: Math.round(Math.random() * 280),
         token: colors[id % colors.length],
+        size: sizes[id % sizes.length],
       })),
     );
-    const timer = window.setTimeout(() => setPieces([]), 1500);
+    const timer = window.setTimeout(() => setPieces([]), 2200);
     return () => window.clearTimeout(timer);
   }, []);
 
   return (
-    <div className="absolute -bottom-6 left-6 max-w-[240px] rounded-2xl border border-berry/30 bg-background p-5 shadow-lg">
-      <div className="pointer-events-none absolute inset-x-0 top-2 overflow-visible" aria-hidden>
+    <div className="absolute -bottom-8 left-6 max-w-[260px] overflow-visible">
+      <div className="pointer-events-none absolute left-1/2 top-4 h-0 w-0 overflow-visible" aria-hidden>
         {pieces.map((piece) => (
           <span
             key={piece.id}
-            className={`confetti-piece absolute left-1/2 top-1/2 h-2 w-1 rounded-full ${piece.token}`}
+            className={`confetti-piece absolute left-1/2 top-1/2 rounded-sm ${piece.size} ${piece.token}`}
             style={
               {
                 "--confetti-x": `${piece.x}px`,
@@ -314,12 +332,22 @@ function OpeningDateSign() {
           />
         ))}
       </div>
-      <p className="font-display text-lg italic leading-snug text-accent">
-        {site.openingDate}
-      </p>
-      <p className="mt-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-        A new little cheesecake fridge on the block
-      </p>
+      <div className="relative rounded-2xl border border-berry/30 bg-gradient-to-br from-cream via-background to-blush/60 p-6 shadow-2xl ring-1 ring-berry/10">
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-accent px-3 py-0.5 text-[9px] font-semibold uppercase tracking-[0.3em] text-accent-foreground shadow-md">
+          Grand Opening
+        </div>
+        <div className="flex items-center gap-2 pt-1">
+          <span className="h-px flex-1 bg-berry/30" />
+          <span className="text-[9px] font-semibold uppercase tracking-[0.32em] text-sage">Save the date</span>
+          <span className="h-px flex-1 bg-berry/30" />
+        </div>
+        <p className="mt-3 text-center font-display text-2xl italic leading-tight text-accent">
+          {site.openingDate}
+        </p>
+        <p className="mt-2 text-center text-[10px] font-medium leading-relaxed text-muted-foreground">
+          A new little cheesecake fridge on the block
+        </p>
+      </div>
     </div>
   );
 }
@@ -337,8 +365,9 @@ function FlavorOfTheWeek({ weekly }: { weekly: DbFlavor | null }) {
               alt={weekly.name}
               width={1200}
               height={1200}
-              className="aspect-square w-full rounded-3xl object-cover shadow-xl"
+              className={`aspect-square w-full rounded-3xl object-cover shadow-xl ${weekly.sold_out ? "opacity-60 grayscale" : ""}`}
             />
+            <StockBadge soldOut={!!weekly.sold_out} className="absolute left-4 top-4" />
           </div>
         </Reveal>
         <Reveal delay={120} className="order-1 md:order-2">
@@ -392,15 +421,16 @@ function Flavors({ staples, weekly }: { staples: DbFlavor[]; weekly: DbFlavor | 
             items.map((f, i) => (
               <Reveal key={f.id} delay={i * 90}>
                 <article className="group flex flex-col">
-                  <div className="overflow-hidden rounded-2xl bg-background">
+                  <div className="relative overflow-hidden rounded-2xl bg-background">
                     <img
                       src={imageForFlavor(f)}
                       alt={f.name}
                       loading="lazy"
                       width={900}
                       height={900}
-                      className="aspect-square w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                      className={`aspect-square w-full object-cover transition-transform duration-700 group-hover:scale-[1.03] ${f.sold_out ? "opacity-60 grayscale" : ""}`}
                     />
+                    <StockBadge soldOut={!!f.sold_out} className="absolute left-3 top-3" />
                   </div>
                   <p className="mt-5 text-[10px] font-semibold uppercase tracking-[0.22em] text-accent">
                     {f.tag}
