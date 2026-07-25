@@ -27,6 +27,7 @@ type Flavor = {
   week_label: string | null;
   position: number;
   active: boolean;
+  sold_out: boolean;
 };
 
 type Subscriber = { id: string; email: string; created_at: string };
