@@ -570,13 +570,13 @@ function Hours() {
 
         <dl className="divide-y divide-primary-foreground/15 border-y border-primary-foreground/15">
           {[
+            ["Monday", "8:00 am — 9:00 pm"],
+            ["Tuesday", "8:00 am — 9:00 pm"],
+            ["Wednesday", "Closed"],
             ["Thursday", "Bake day — closed"],
             ["Friday", "8:00 am — 9:00 pm"],
             ["Saturday", "8:00 am — 9:00 pm"],
             ["Sunday", "8:00 am — 9:00 pm"],
-            ["Monday", "8:00 am — 9:00 pm"],
-            ["Tuesday", "8:00 am — 9:00 pm"],
-            ["Wednesday", "Closed"],
           ].map(([day, hrs]) => (
             <div key={day} className="flex items-baseline justify-between py-4">
               <dt className="font-display text-xl">{day}</dt>
