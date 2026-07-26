@@ -77,19 +77,23 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Andielicious Cheesecake — Small-batch, self-serve" },
+      { title: "Andielicious Cheesecake · Self-Serve Slices" },
       {
         name: "description",
         content:
-          "Andielicious Cheesecake is a self-serve cheesecake shop. Baked fresh on Thursdays, open Friday through Tuesday, 8am–9pm.",
+          "Local self-serve cheesecake slices from Andielicious. Baked on Thursdays, open Friday through Tuesday, with weekly flavors and reviews.",
       },
-      { property: "og:title", content: "Andielicious Cheesecake" },
+      { property: "og:title", content: "Andielicious Cheesecake · Self-Serve Slices" },
       {
         property: "og:description",
-        content: "Small-batch cheesecake, baked fresh Thursdays. Come pick yours up any time Fri–Tue, 8am–9pm.",
+        content: "Local self-serve cheesecake slices from Andielicious. Baked on Thursdays, open Friday through Tuesday, with weekly flavors and reviews.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Andielicious Cheesecake · Self-Serve Slices" },
+      { name: "twitter:description", content: "Local self-serve cheesecake slices from Andielicious. Baked on Thursdays, open Friday through Tuesday, with weekly flavors and reviews." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ef57e00e-dcb9-41f4-aebf-5feaea6c4aef/id-preview-51095db3--a576d68a-0f5e-4375-b7f8-83c7ce5d32b5.lovable.app-1785107995218.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ef57e00e-dcb9-41f4-aebf-5feaea6c4aef/id-preview-51095db3--a576d68a-0f5e-4375-b7f8-83c7ce5d32b5.lovable.app-1785107995218.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },

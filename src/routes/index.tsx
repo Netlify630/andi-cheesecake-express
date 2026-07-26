@@ -23,11 +23,11 @@ export const Route = createFileRoute("/")({
         content:
           "Local self-serve cheesecake slices from Andielicious. Baked on Thursdays, open Friday through Tuesday, with weekly flavors and reviews.",
       },
-      { property: "og:title", content: "Andielicious Cheesecake" },
+      { property: "og:title", content: "Andielicious Cheesecake · Self-Serve Slices" },
       {
         property: "og:description",
         content:
-          "Small-batch self-serve cheesecake slices, baked fresh on Thursdays and available Friday through Tuesday.",
+          "Local self-serve cheesecake slices from Andielicious. Baked on Thursdays, open Friday through Tuesday, with weekly flavors and reviews.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
