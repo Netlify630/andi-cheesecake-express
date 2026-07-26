@@ -526,24 +526,29 @@ function HowItWorks() {
   return (
     <section id="how" className="py-20 md:py-28">
       <div className="mx-auto max-w-6xl px-6">
-        <div className="mb-14 max-w-2xl">
-          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">Self-Serve, Simplified</p>
-          <h2 className="mt-3 font-display text-4xl md:text-5xl">How it works</h2>
-        </div>
+        <Reveal>
+          <div className="mb-14 max-w-2xl">
+            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">Self-Serve, Simplified</p>
+            <h2 className="mt-3 font-display text-4xl md:text-5xl">How it works</h2>
+          </div>
+        </Reveal>
 
         <ol className="grid grid-cols-1 gap-10 md:grid-cols-3">
-          {steps.map((s) => (
-            <li key={s.n} className="border-t border-border pt-6">
-              <span className="font-display text-4xl italic text-accent">{s.n}</span>
-              <h3 className="mt-4 font-display text-2xl">{s.title}</h3>
-              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{s.body}</p>
-            </li>
+          {steps.map((s, i) => (
+            <Reveal key={s.n} delay={i * 120} variant="up">
+              <li className="border-t border-border pt-6">
+                <span className="font-display text-4xl italic text-accent">{s.n}</span>
+                <h3 className="mt-4 font-display text-2xl">{s.title}</h3>
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{s.body}</p>
+              </li>
+            </Reveal>
           ))}
         </ol>
       </div>
     </section>
   );
 }
+
 
 function Hours() {
   return (
