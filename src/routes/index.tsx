@@ -554,38 +554,37 @@ function Hours() {
   return (
     <section id="hours" className="border-y border-border bg-primary py-20 text-primary-foreground md:py-28">
       <div className="mx-auto grid max-w-6xl grid-cols-1 gap-12 px-6 md:grid-cols-2 md:items-center">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-blush">Visit</p>
-          <h2 className="mt-3 font-display text-4xl md:text-5xl">Open five days a week.</h2>
-          <p className="mt-6 max-w-md text-base leading-relaxed text-primary-foreground/75">
-            Bake day is Thursday — the fridge is closed while Andie's in the kitchen.
-            Come by any other day and help yourself. <span className="text-blush">{site.payment.methods}.</span>
-          </p>
-          <a
-            href={`mailto:${site.contactEmail}`}
-            className="mt-8 inline-flex items-center rounded-full bg-accent px-6 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent-foreground transition-opacity hover:opacity-90"
-          >
-            Reserve a cheesecake
-          </a>
-        </div>
+        <Reveal variant="left">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-blush">Visit</p>
+            <h2 className="mt-3 font-display text-4xl md:text-5xl">Open five days a week.</h2>
+            <p className="mt-6 max-w-md text-base leading-relaxed text-primary-foreground/75">
+              Bake day is Thursday — the fridge is closed while Andie's in the kitchen.
+              Come by any other day and help yourself. <span className="text-blush">{site.payment.methods}.</span>
+            </p>
+          </div>
+        </Reveal>
 
-        <dl className="divide-y divide-primary-foreground/15 border-y border-primary-foreground/15">
-          {[
-            ["Monday", "8:00 am — 9:00 pm"],
-            ["Tuesday", "8:00 am — 9:00 pm"],
-            ["Wednesday", "Closed"],
-            ["Thursday", "Bake day — closed"],
-            ["Friday", "8:00 am — 9:00 pm"],
-            ["Saturday", "8:00 am — 9:00 pm"],
-            ["Sunday", "8:00 am — 9:00 pm"],
-          ].map(([day, hrs]) => (
-            <div key={day} className="flex items-baseline justify-between py-4">
-              <dt className="font-display text-xl">{day}</dt>
-              <dd className="text-sm tracking-wide text-primary-foreground/75">{hrs}</dd>
-            </div>
-          ))}
-        </dl>
+        <Reveal variant="right" delay={120}>
+          <dl className="divide-y divide-primary-foreground/15 border-y border-primary-foreground/15">
+            {[
+              ["Monday", "8:00 am — 9:00 pm"],
+              ["Tuesday", "8:00 am — 9:00 pm"],
+              ["Wednesday", "Closed"],
+              ["Thursday", "Bake day — closed"],
+              ["Friday", "8:00 am — 9:00 pm"],
+              ["Saturday", "8:00 am — 9:00 pm"],
+              ["Sunday", "8:00 am — 9:00 pm"],
+            ].map(([day, hrs]) => (
+              <div key={day} className="flex items-baseline justify-between py-4">
+                <dt className="font-display text-xl">{day}</dt>
+                <dd className="text-sm tracking-wide text-primary-foreground/75">{hrs}</dd>
+              </div>
+            ))}
+          </dl>
+        </Reveal>
       </div>
+
     </section>
   );
 }
