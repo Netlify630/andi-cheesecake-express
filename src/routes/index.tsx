@@ -381,13 +381,8 @@ function FlavorOfTheWeek({ weekly }: { weekly: DbFlavor | null }) {
           <p className="mt-5 max-w-md text-base leading-relaxed text-muted-foreground">
             {weekly.description}
           </p>
-          <a
-            href="#hours"
-            className="mt-8 inline-flex rounded-full bg-primary px-6 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-primary-foreground transition-colors hover:bg-accent"
-          >
-            Reserve a slice
-          </a>
         </Reveal>
+
       </div>
     </section>
   );
