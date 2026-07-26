@@ -596,50 +596,54 @@ function LocationSection() {
       <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-blush/40 to-transparent" />
       <div className="relative mx-auto grid max-w-6xl grid-cols-1 gap-10 px-6 md:grid-cols-2">
         {/* Location card */}
-        <div className="rounded-3xl border border-berry/20 bg-card p-8 md:p-10">
-          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-sage">Find the fridge</p>
-          <h2 className="mt-3 font-display text-4xl md:text-5xl">
-            Where to <em className="italic text-accent">find us</em>
-          </h2>
-          <address className="mt-6 not-italic">
-            <p className="font-display text-2xl">{location.addressLine1}</p>
-            <p className="font-display text-2xl">{location.addressLine2}</p>
-          </address>
-          {location.note && (
-            <p className="mt-4 text-sm leading-relaxed text-muted-foreground">{location.note}</p>
-          )}
-          {location.mapsUrl && (
-            <a
-              href={location.mapsUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="mt-6 inline-flex rounded-full bg-accent px-6 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent-foreground transition-colors hover:bg-primary"
-            >
-              Get directions
-            </a>
-          )}
-        </div>
+        <Reveal variant="left">
+          <div className="rounded-3xl border border-berry/20 bg-card p-8 md:p-10">
+            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-sage">Find the fridge</p>
+            <h2 className="mt-3 font-display text-4xl md:text-5xl">
+              Where to <em className="italic text-accent">find us</em>
+            </h2>
+            <address className="mt-6 not-italic">
+              <p className="font-display text-2xl">{location.addressLine1}</p>
+              <p className="font-display text-2xl">{location.addressLine2}</p>
+            </address>
+            {location.note && (
+              <p className="mt-4 text-sm leading-relaxed text-muted-foreground">{location.note}</p>
+            )}
+            {location.mapsUrl && (
+              <a
+                href={location.mapsUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-6 inline-flex rounded-full bg-accent px-6 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent-foreground transition-colors hover:bg-primary"
+              >
+                Get directions
+              </a>
+            )}
+          </div>
+        </Reveal>
 
         {/* Payment card */}
-        <div className="rounded-3xl bg-sage/15 p-8 md:p-10">
-          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">Payment</p>
-          <h2 className="mt-3 font-display text-4xl md:text-5xl">
-            {payment.methods.split(" or ")[0]} <em className="italic text-sage">or</em> {payment.methods.split(" or ")[1] ?? ""}
-          </h2>
-          <p className="mt-6 text-base leading-relaxed text-muted-foreground">
-            Sorry, no cards. Pay ahead over Venmo to reserve a cake, or drop cash
-            in the box at the fridge.
-          </p>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <span className="rounded-full bg-berry px-5 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-accent-foreground">
-              Venmo · {payment.venmoHandle}
-            </span>
-            <span className="rounded-full border border-sage px-5 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-sage">
-              Cash accepted
-            </span>
+        <Reveal variant="right" delay={120}>
+          <div className="rounded-3xl bg-sage/15 p-8 md:p-10">
+            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">Payment</p>
+            <h2 className="mt-3 font-display text-4xl md:text-5xl">
+              {payment.methods.split(" or ")[0]} <em className="italic text-sage">or</em> {payment.methods.split(" or ")[1] ?? ""}
+            </h2>
+            <p className="mt-6 text-base leading-relaxed text-muted-foreground">
+              Sorry, no cards. Pay over Venmo, or drop cash in the box at the fridge.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <span className="rounded-full bg-berry px-5 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-accent-foreground">
+                Venmo · {payment.venmoHandle}
+              </span>
+              <span className="rounded-full border border-sage px-5 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-sage">
+                Cash accepted
+              </span>
+            </div>
           </div>
-        </div>
+        </Reveal>
       </div>
+
     </section>
   );
 }
