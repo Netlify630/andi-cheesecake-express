@@ -381,13 +381,8 @@ function FlavorOfTheWeek({ weekly }: { weekly: DbFlavor | null }) {
           <p className="mt-5 max-w-md text-base leading-relaxed text-muted-foreground">
             {weekly.description}
           </p>
-          <a
-            href="#hours"
-            className="mt-8 inline-flex rounded-full bg-primary px-6 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-primary-foreground transition-colors hover:bg-accent"
-          >
-            Reserve a slice
-          </a>
         </Reveal>
+
       </div>
     </section>
   );
@@ -516,32 +511,37 @@ function HowItWorks() {
     },
     {
       n: "02",
-      title: "Reserve a slice (optional)",
-      body:
-        "Want to make sure your favorite doesn't sell out? DM us to reserve slices ahead of time and Venmo to lock them in.",
-    },
-    {
-      n: "03",
       title: "Drive over & pick up",
       body:
         "Come by any time Friday through Tuesday, 8am–9pm. Grab your slice from the self-serve fridge, pay if you haven't, and enjoy.",
     },
+    {
+      n: "03",
+      title: "Venmo or cash",
+      body:
+        "Pay right at the fridge — Venmo (@Andielicious) or drop cash in the box. No cards, no apps, no fuss.",
+    },
+
   ];
   return (
     <section id="how" className="py-20 md:py-28">
       <div className="mx-auto max-w-6xl px-6">
-        <div className="mb-14 max-w-2xl">
-          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">Self-Serve, Simplified</p>
-          <h2 className="mt-3 font-display text-4xl md:text-5xl">How it works</h2>
-        </div>
+        <Reveal>
+          <div className="mb-14 max-w-2xl">
+            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">Self-Serve, Simplified</p>
+            <h2 className="mt-3 font-display text-4xl md:text-5xl">How it works</h2>
+          </div>
+        </Reveal>
 
         <ol className="grid grid-cols-1 gap-10 md:grid-cols-3">
-          {steps.map((s) => (
-            <li key={s.n} className="border-t border-border pt-6">
-              <span className="font-display text-4xl italic text-accent">{s.n}</span>
-              <h3 className="mt-4 font-display text-2xl">{s.title}</h3>
-              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{s.body}</p>
-            </li>
+          {steps.map((s, i) => (
+            <Reveal key={s.n} delay={i * 120} variant="up">
+              <li className="border-t border-border pt-6">
+                <span className="font-display text-4xl italic text-accent">{s.n}</span>
+                <h3 className="mt-4 font-display text-2xl">{s.title}</h3>
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{s.body}</p>
+              </li>
+            </Reveal>
           ))}
         </ol>
       </div>
@@ -549,42 +549,42 @@ function HowItWorks() {
   );
 }
 
+
 function Hours() {
   return (
     <section id="hours" className="border-y border-border bg-primary py-20 text-primary-foreground md:py-28">
       <div className="mx-auto grid max-w-6xl grid-cols-1 gap-12 px-6 md:grid-cols-2 md:items-center">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-blush">Visit</p>
-          <h2 className="mt-3 font-display text-4xl md:text-5xl">Open five days a week.</h2>
-          <p className="mt-6 max-w-md text-base leading-relaxed text-primary-foreground/75">
-            Bake day is Thursday — the fridge is closed while Andie's in the kitchen.
-            Come by any other day and help yourself. <span className="text-blush">{site.payment.methods}.</span>
-          </p>
-          <a
-            href={`mailto:${site.contactEmail}`}
-            className="mt-8 inline-flex items-center rounded-full bg-accent px-6 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent-foreground transition-opacity hover:opacity-90"
-          >
-            Reserve a cheesecake
-          </a>
-        </div>
+        <Reveal variant="left">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-blush">Visit</p>
+            <h2 className="mt-3 font-display text-4xl md:text-5xl">Open five days a week.</h2>
+            <p className="mt-6 max-w-md text-base leading-relaxed text-primary-foreground/75">
+              Bake day is Thursday — the fridge is closed while Andie's in the kitchen.
+              Come by any other day and help yourself. <span className="text-blush">{site.payment.methods}.</span>
+            </p>
+          </div>
+        </Reveal>
 
-        <dl className="divide-y divide-primary-foreground/15 border-y border-primary-foreground/15">
-          {[
-            ["Monday", "8:00 am — 9:00 pm"],
-            ["Tuesday", "8:00 am — 9:00 pm"],
-            ["Wednesday", "Closed"],
-            ["Thursday", "Bake day — closed"],
-            ["Friday", "8:00 am — 9:00 pm"],
-            ["Saturday", "8:00 am — 9:00 pm"],
-            ["Sunday", "8:00 am — 9:00 pm"],
-          ].map(([day, hrs]) => (
-            <div key={day} className="flex items-baseline justify-between py-4">
-              <dt className="font-display text-xl">{day}</dt>
-              <dd className="text-sm tracking-wide text-primary-foreground/75">{hrs}</dd>
-            </div>
-          ))}
-        </dl>
+        <Reveal variant="right" delay={120}>
+          <dl className="divide-y divide-primary-foreground/15 border-y border-primary-foreground/15">
+            {[
+              ["Monday", "8:00 am — 9:00 pm"],
+              ["Tuesday", "8:00 am — 9:00 pm"],
+              ["Wednesday", "Closed"],
+              ["Thursday", "Bake day — closed"],
+              ["Friday", "8:00 am — 9:00 pm"],
+              ["Saturday", "8:00 am — 9:00 pm"],
+              ["Sunday", "8:00 am — 9:00 pm"],
+            ].map(([day, hrs]) => (
+              <div key={day} className="flex items-baseline justify-between py-4">
+                <dt className="font-display text-xl">{day}</dt>
+                <dd className="text-sm tracking-wide text-primary-foreground/75">{hrs}</dd>
+              </div>
+            ))}
+          </dl>
+        </Reveal>
       </div>
+
     </section>
   );
 }
@@ -596,50 +596,54 @@ function LocationSection() {
       <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-blush/40 to-transparent" />
       <div className="relative mx-auto grid max-w-6xl grid-cols-1 gap-10 px-6 md:grid-cols-2">
         {/* Location card */}
-        <div className="rounded-3xl border border-berry/20 bg-card p-8 md:p-10">
-          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-sage">Find the fridge</p>
-          <h2 className="mt-3 font-display text-4xl md:text-5xl">
-            Where to <em className="italic text-accent">find us</em>
-          </h2>
-          <address className="mt-6 not-italic">
-            <p className="font-display text-2xl">{location.addressLine1}</p>
-            <p className="font-display text-2xl">{location.addressLine2}</p>
-          </address>
-          {location.note && (
-            <p className="mt-4 text-sm leading-relaxed text-muted-foreground">{location.note}</p>
-          )}
-          {location.mapsUrl && (
-            <a
-              href={location.mapsUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="mt-6 inline-flex rounded-full bg-accent px-6 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent-foreground transition-colors hover:bg-primary"
-            >
-              Get directions
-            </a>
-          )}
-        </div>
+        <Reveal variant="left">
+          <div className="rounded-3xl border border-berry/20 bg-card p-8 md:p-10">
+            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-sage">Find the fridge</p>
+            <h2 className="mt-3 font-display text-4xl md:text-5xl">
+              Where to <em className="italic text-accent">find us</em>
+            </h2>
+            <address className="mt-6 not-italic">
+              <p className="font-display text-2xl">{location.addressLine1}</p>
+              <p className="font-display text-2xl">{location.addressLine2}</p>
+            </address>
+            {location.note && (
+              <p className="mt-4 text-sm leading-relaxed text-muted-foreground">{location.note}</p>
+            )}
+            {location.mapsUrl && (
+              <a
+                href={location.mapsUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-6 inline-flex rounded-full bg-accent px-6 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent-foreground transition-colors hover:bg-primary"
+              >
+                Get directions
+              </a>
+            )}
+          </div>
+        </Reveal>
 
         {/* Payment card */}
-        <div className="rounded-3xl bg-sage/15 p-8 md:p-10">
-          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">Payment</p>
-          <h2 className="mt-3 font-display text-4xl md:text-5xl">
-            {payment.methods.split(" or ")[0]} <em className="italic text-sage">or</em> {payment.methods.split(" or ")[1] ?? ""}
-          </h2>
-          <p className="mt-6 text-base leading-relaxed text-muted-foreground">
-            Sorry, no cards. Pay ahead over Venmo to reserve a cake, or drop cash
-            in the box at the fridge.
-          </p>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <span className="rounded-full bg-berry px-5 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-accent-foreground">
-              Venmo · {payment.venmoHandle}
-            </span>
-            <span className="rounded-full border border-sage px-5 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-sage">
-              Cash accepted
-            </span>
+        <Reveal variant="right" delay={120}>
+          <div className="rounded-3xl bg-sage/15 p-8 md:p-10">
+            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">Payment</p>
+            <h2 className="mt-3 font-display text-4xl md:text-5xl">
+              {payment.methods.split(" or ")[0]} <em className="italic text-sage">or</em> {payment.methods.split(" or ")[1] ?? ""}
+            </h2>
+            <p className="mt-6 text-base leading-relaxed text-muted-foreground">
+              Sorry, no cards. Pay over Venmo, or drop cash in the box at the fridge.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <span className="rounded-full bg-berry px-5 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-accent-foreground">
+                Venmo · {payment.venmoHandle}
+              </span>
+              <span className="rounded-full border border-sage px-5 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-sage">
+                Cash accepted
+              </span>
+            </div>
           </div>
-        </div>
+        </Reveal>
       </div>
+
     </section>
   );
 }
@@ -649,33 +653,38 @@ function BakerSection() {
   return (
     <section id="baker" className="border-t border-border bg-secondary/40 py-20 md:py-28">
       <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 px-6 md:grid-cols-[1fr_1.1fr]">
-        <div className="relative">
-          <div className="absolute -inset-5 -z-10 rounded-[2rem] bg-blush" />
-          <div className="absolute -inset-2 -z-10 rounded-[2rem] bg-sage/25" />
-          <img
-            src={bakerImg}
-            alt={`${baker.name}, the baker behind Andielicious`}
-            loading="lazy"
-            width={1200}
-            height={1400}
-            className="aspect-[6/7] w-full rounded-3xl object-cover shadow-xl"
-          />
-        </div>
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">
-            Meet the baker
-          </p>
-          <h2 className="mt-3 font-display text-5xl leading-[1.05] md:text-6xl">
-            Hi, I'm <em className="italic text-accent">{baker.name}</em>.
-          </h2>
-          <p className="mt-4 text-xs font-semibold uppercase tracking-[0.22em] text-sage">
-            {baker.role}
-          </p>
-          <p className="mt-6 max-w-md text-base leading-relaxed text-muted-foreground">
-            {baker.bio}
-          </p>
-        </div>
+        <Reveal variant="scale">
+          <div className="relative">
+            <div className="absolute -inset-5 -z-10 rounded-[2rem] bg-blush" />
+            <div className="absolute -inset-2 -z-10 rounded-[2rem] bg-sage/25" />
+            <img
+              src={bakerImg}
+              alt={`${baker.name}, the baker behind Andielicious`}
+              loading="lazy"
+              width={1200}
+              height={1400}
+              className="aspect-[6/7] w-full rounded-3xl object-cover shadow-xl"
+            />
+          </div>
+        </Reveal>
+        <Reveal variant="right" delay={140}>
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">
+              Meet the baker
+            </p>
+            <h2 className="mt-3 font-display text-5xl leading-[1.05] md:text-6xl">
+              Hi, I'm <em className="italic text-accent">{baker.name}</em>.
+            </h2>
+            <p className="mt-4 text-xs font-semibold uppercase tracking-[0.22em] text-sage">
+              {baker.role}
+            </p>
+            <p className="mt-6 max-w-md text-base leading-relaxed text-muted-foreground">
+              {baker.bio}
+            </p>
+          </div>
+        </Reveal>
       </div>
+
     </section>
   );
 }
