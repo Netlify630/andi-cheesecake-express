@@ -653,33 +653,38 @@ function BakerSection() {
   return (
     <section id="baker" className="border-t border-border bg-secondary/40 py-20 md:py-28">
       <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 px-6 md:grid-cols-[1fr_1.1fr]">
-        <div className="relative">
-          <div className="absolute -inset-5 -z-10 rounded-[2rem] bg-blush" />
-          <div className="absolute -inset-2 -z-10 rounded-[2rem] bg-sage/25" />
-          <img
-            src={bakerImg}
-            alt={`${baker.name}, the baker behind Andielicious`}
-            loading="lazy"
-            width={1200}
-            height={1400}
-            className="aspect-[6/7] w-full rounded-3xl object-cover shadow-xl"
-          />
-        </div>
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">
-            Meet the baker
-          </p>
-          <h2 className="mt-3 font-display text-5xl leading-[1.05] md:text-6xl">
-            Hi, I'm <em className="italic text-accent">{baker.name}</em>.
-          </h2>
-          <p className="mt-4 text-xs font-semibold uppercase tracking-[0.22em] text-sage">
-            {baker.role}
-          </p>
-          <p className="mt-6 max-w-md text-base leading-relaxed text-muted-foreground">
-            {baker.bio}
-          </p>
-        </div>
+        <Reveal variant="scale">
+          <div className="relative">
+            <div className="absolute -inset-5 -z-10 rounded-[2rem] bg-blush" />
+            <div className="absolute -inset-2 -z-10 rounded-[2rem] bg-sage/25" />
+            <img
+              src={bakerImg}
+              alt={`${baker.name}, the baker behind Andielicious`}
+              loading="lazy"
+              width={1200}
+              height={1400}
+              className="aspect-[6/7] w-full rounded-3xl object-cover shadow-xl"
+            />
+          </div>
+        </Reveal>
+        <Reveal variant="right" delay={140}>
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">
+              Meet the baker
+            </p>
+            <h2 className="mt-3 font-display text-5xl leading-[1.05] md:text-6xl">
+              Hi, I'm <em className="italic text-accent">{baker.name}</em>.
+            </h2>
+            <p className="mt-4 text-xs font-semibold uppercase tracking-[0.22em] text-sage">
+              {baker.role}
+            </p>
+            <p className="mt-6 max-w-md text-base leading-relaxed text-muted-foreground">
+              {baker.bio}
+            </p>
+          </div>
+        </Reveal>
       </div>
+
     </section>
   );
 }
