@@ -511,16 +511,17 @@ function HowItWorks() {
     },
     {
       n: "02",
-      title: "Reserve a slice (optional)",
-      body:
-        "Want to make sure your favorite doesn't sell out? DM us to reserve slices ahead of time and Venmo to lock them in.",
-    },
-    {
-      n: "03",
       title: "Drive over & pick up",
       body:
         "Come by any time Friday through Tuesday, 8am–9pm. Grab your slice from the self-serve fridge, pay if you haven't, and enjoy.",
     },
+    {
+      n: "03",
+      title: "Venmo or cash",
+      body:
+        "Pay right at the fridge — Venmo (@Andielicious) or drop cash in the box. No cards, no apps, no fuss.",
+    },
+
   ];
   return (
     <section id="how" className="py-20 md:py-28">
