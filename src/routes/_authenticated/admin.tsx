@@ -4,7 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import logoAsset from "@/assets/andielicious-logo.png.asset.json";
-import { Trash2, LogOut, Eye, Cookie, Mail, Star } from "lucide-react";
+import { Trash2, LogOut, Eye, Cookie, Mail, Star, Users } from "lucide-react";
+import { listAppMembers, type AppMember } from "@/lib/admin.functions";
+
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
@@ -38,7 +40,7 @@ function AdminPage() {
   const [checkingRole, setCheckingRole] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [email, setEmail] = useState<string>("");
-  const [tab, setTab] = useState<"overview" | "flavors" | "subscribers" | "reviews">("overview");
+  const [tab, setTab] = useState<"overview" | "flavors" | "members" | "subscribers" | "reviews">("overview");
 
   useEffect(() => {
     (async () => {
@@ -118,6 +120,7 @@ function AdminPage() {
           {[
             { id: "overview", label: "Overview", icon: Eye },
             { id: "flavors", label: "Flavors", icon: Cookie },
+            { id: "members", label: "Members", icon: Users },
             { id: "subscribers", label: "Subscribers", icon: Mail },
             { id: "reviews", label: "Reviews", icon: Star },
           ].map((t) => {
@@ -141,6 +144,7 @@ function AdminPage() {
       <main className="mx-auto max-w-6xl px-6 py-10">
         {tab === "overview" && <OverviewTab />}
         {tab === "flavors" && <FlavorsTab />}
+        {tab === "members" && <MembersTab />}
         {tab === "subscribers" && <SubscribersTab />}
         {tab === "reviews" && <ReviewsTab />}
       </main>
