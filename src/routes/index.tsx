@@ -61,12 +61,40 @@ function imageForFlavor(f: Pick<DbFlavor, "slug" | "image_url">) {
 
 function Home() {
   const [flavors, setFlavors] = useState<DbFlavor[]>([]);
+  const [authState, setAuthState] = useState<"loading" | "in" | "out">("loading");
 
   useEffect(() => {
-    // Fire-and-forget page view tracking
-    supabase.from("page_views").insert({ path: window.location.pathname }).then(({ error }) => {
-      if (error) console.warn("page view", error);
+    let ignore = false;
+    supabase.auth.getUser().then(({ data }) => {
+      if (!ignore) setAuthState(data.user ? "in" : "out");
     });
+    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_OUT") return setAuthState("out");
+      if (session?.user) setAuthState("in");
+    });
+    return () => {
+      ignore = true;
+      sub.subscription.unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (authState !== "in") return;
+    // Page view tracking — once per browser session, guarded against double effects.
+    try {
+      const key = "andielicious_view_logged";
+      if (!sessionStorage.getItem(key)) {
+        sessionStorage.setItem(key, String(Date.now()));
+        supabase.from("page_views").insert({ path: window.location.pathname }).then(({ error }) => {
+          if (error) {
+            sessionStorage.removeItem(key);
+            console.warn("page view", error);
+          }
+        });
+      }
+    } catch {
+      /* storage blocked — skip tracking rather than double count */
+    }
     // Load flavors from DB (admin-editable)
     supabase
       .from("flavors")
@@ -77,11 +105,20 @@ function Home() {
         if (error) console.error(error);
         setFlavors((data as DbFlavor[]) ?? []);
       });
-  }, []);
+  }, [authState]);
 
   const weekly = flavors.find((f) => f.category === "weekly") ?? null;
   const staples = flavors.filter((f) => f.category === "staple");
   const voteOptions = flavors.filter((f) => f.category === "vote_option");
+
+  if (authState !== "in") {
+    return (
+      <>
+        <Toaster position="top-center" />
+        <WelcomeGate loading={authState === "loading"} />
+      </>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -89,6 +126,7 @@ function Home() {
       <Nav />
       <Hero />
       <FlavorOfTheWeek weekly={weekly} />
+      <MondayDeal />
       <Flavors staples={staples} weekly={weekly} />
       <HowItWorks />
       <Hours />
@@ -101,6 +139,67 @@ function Home() {
     </div>
   );
 }
+
+function WelcomeGate({ loading }: { loading: boolean }) {
+  return (
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-b from-blush/60 via-background to-background px-6 py-16">
+      <div className="pointer-events-none absolute -left-24 top-10 h-72 w-72 rounded-full bg-sage/25 blur-3xl" />
+      <div className="pointer-events-none absolute -right-24 bottom-0 h-80 w-80 rounded-full bg-berry/20 blur-3xl" />
+      <div className="relative w-full max-w-lg rounded-3xl border border-berry/20 bg-card/90 p-10 text-center shadow-2xl backdrop-blur">
+        <img
+          src={logoAsset.url}
+          alt="Andielicious logo"
+          className="mx-auto h-24 w-24 rounded-full object-cover shadow-lg ring-4 ring-cream"
+        />
+        <p className="mt-6 text-[10px] font-semibold uppercase tracking-[0.35em] text-sage">
+          {site.openingDate}
+        </p>
+        <h1 className="mt-3 font-display text-4xl leading-tight md:text-5xl">
+          Welcome to <em className="italic text-accent">Andielicious</em>
+        </h1>
+        <p className="mx-auto mt-5 max-w-sm text-sm leading-relaxed text-muted-foreground">
+          Small-batch, self-serve cheesecake slices. Sign in (it's free) to see this week's
+          flavors, hours, and the little fridge's whereabouts.
+        </p>
+        {loading ? (
+          <p className="mt-8 text-xs uppercase tracking-widest text-muted-foreground">Checking…</p>
+        ) : (
+          <div className="mt-8 flex flex-col items-center gap-3">
+            <Link
+              to="/auth"
+              className="w-full rounded-full bg-accent px-6 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent-foreground transition-colors hover:bg-primary"
+            >
+              Sign in to enter
+            </Link>
+            <Link
+              to="/auth"
+              className="text-xs uppercase tracking-widest text-muted-foreground hover:text-accent"
+            >
+              New here? Create a free account →
+            </Link>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function MondayDeal() {
+  return (
+    <section className="border-t border-border bg-berry/15">
+      <div className="mx-auto flex max-w-6xl flex-col items-center gap-3 px-6 py-8 text-center md:flex-row md:justify-center md:gap-6">
+        <span className="rounded-full bg-accent px-4 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-accent-foreground">
+          Weekly deal
+        </span>
+        <p className="font-display text-3xl italic text-accent md:text-4xl">50% off Mondays</p>
+        <p className="max-w-xs text-sm text-muted-foreground">
+          Every Monday, every slice is half price at the fridge.
+        </p>
+      </div>
+    </section>
+  );
+}
+
 
 function Nav() {
   const [email, setEmail] = useState<string | null>(null);
