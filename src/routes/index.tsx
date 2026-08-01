@@ -404,12 +404,14 @@ function OpeningDateSign() {
         x: Math.round((Math.random() - 0.5) * 460),
         y: Math.round(-90 - Math.random() * 260),
         r: Math.round((Math.random() - 0.5) * 540),
-        delay: Math.round(Math.random() * 280),
+        // 900ms beat before the blast so the sign catches the eye first.
+        delay: 900 + Math.round(Math.random() * 280),
+
         token: colors[id % colors.length],
         size: sizes[id % sizes.length],
       })),
     );
-    const timer = window.setTimeout(() => setPieces([]), 2200);
+    const timer = window.setTimeout(() => setPieces([]), 3300);
     return () => window.clearTimeout(timer);
   }, []);
 
@@ -667,7 +669,7 @@ function Hours() {
         <Reveal variant="right" delay={120}>
           <dl className="divide-y divide-primary-foreground/15 border-y border-primary-foreground/15">
             {[
-              ["Monday", "8:00 am — 9:00 pm"],
+              ["Monday", "8:00 am — 9:00 pm · 50% off"],
               ["Tuesday", "8:00 am — 9:00 pm"],
               ["Wednesday", "Closed"],
               ["Thursday", "Bake day — closed"],
