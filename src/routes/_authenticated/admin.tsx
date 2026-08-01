@@ -4,7 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import logoAsset from "@/assets/andielicious-logo.png.asset.json";
-import { Trash2, LogOut, Eye, Cookie, Mail, Star } from "lucide-react";
+import { Trash2, LogOut, Eye, Cookie, Mail, Star, Users } from "lucide-react";
+import { listAppMembers, type AppMember } from "@/lib/admin.functions";
+
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
@@ -38,7 +40,7 @@ function AdminPage() {
   const [checkingRole, setCheckingRole] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [email, setEmail] = useState<string>("");
-  const [tab, setTab] = useState<"overview" | "flavors" | "subscribers" | "reviews">("overview");
+  const [tab, setTab] = useState<"overview" | "flavors" | "members" | "subscribers" | "reviews">("overview");
 
   useEffect(() => {
     (async () => {
@@ -118,6 +120,7 @@ function AdminPage() {
           {[
             { id: "overview", label: "Overview", icon: Eye },
             { id: "flavors", label: "Flavors", icon: Cookie },
+            { id: "members", label: "Members", icon: Users },
             { id: "subscribers", label: "Subscribers", icon: Mail },
             { id: "reviews", label: "Reviews", icon: Star },
           ].map((t) => {
@@ -141,6 +144,7 @@ function AdminPage() {
       <main className="mx-auto max-w-6xl px-6 py-10">
         {tab === "overview" && <OverviewTab />}
         {tab === "flavors" && <FlavorsTab />}
+        {tab === "members" && <MembersTab />}
         {tab === "subscribers" && <SubscribersTab />}
         {tab === "reviews" && <ReviewsTab />}
       </main>
@@ -624,13 +628,21 @@ function ReviewsTab() {
     load();
   }, []);
 
+  const okToShare = items.filter((r) => r.public_consent).length;
+
   return (
     <div className="grid gap-6">
       <div>
         <h2 className="font-display text-3xl">Reviews</h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Public reviews (checked "okay to share") — these are the ones shown on your site.
+          Every review lands here. The badge shows who ticked the "okay to share publicly" box —
+          only those are safe to feature on the site or socials.
         </p>
+        {!loading && items.length > 0 && (
+          <p className="mt-3 inline-flex rounded-full bg-sage/15 px-4 py-1 text-[10px] font-semibold uppercase tracking-widest text-sage">
+            {okToShare} of {items.length} okay to share publicly
+          </p>
+        )}
       </div>
       {loading ? (
         <p className="text-sm text-muted-foreground">Loading…</p>
@@ -645,13 +657,75 @@ function ReviewsTab() {
                 <span className="text-xs text-accent">{"★".repeat(r.rating)}</span>
               </div>
               <p className="mt-2 text-sm italic text-muted-foreground">"{r.comment}"</p>
-              <p className="mt-3 text-[10px] uppercase tracking-widest text-muted-foreground">
-                {new Date(r.created_at).toLocaleDateString()}
-              </p>
+              <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+                <span
+                  className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[9px] font-semibold uppercase tracking-widest ${
+                    r.public_consent ? "bg-sage/15 text-sage" : "bg-ink/10 text-ink"
+                  }`}
+                >
+                  <span className={`h-1.5 w-1.5 rounded-full ${r.public_consent ? "bg-sage" : "bg-berry"}`} />
+                  {r.public_consent ? "Okay to share publicly" : "Private — do not share"}
+                </span>
+                <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                  {new Date(r.created_at).toLocaleDateString()}
+                </span>
+              </div>
             </div>
           ))}
         </div>
       )}
+    </div>
+  );
+}
+
+// ---------------- Members ----------------
+function MembersTab() {
+  const [members, setMembers] = useState<AppMember[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    listAppMembers()
+      .then((rows) => setMembers(rows))
+      .catch((e: unknown) => setError(e instanceof Error ? e.message : "Couldn't load members."))
+      .finally(() => setLoading(false));
+  }, []);
+
+  return (
+    <div className="grid gap-6">
+      <div>
+        <h2 className="font-display text-3xl">Members</h2>
+        <p className="mt-1 max-w-xl text-sm text-muted-foreground">
+          Everyone who has created an account or signed in to your site.
+        </p>
+      </div>
+      <div className="rounded-3xl border border-border bg-card">
+        {loading ? (
+          <p className="p-6 text-sm text-muted-foreground">Loading…</p>
+        ) : error ? (
+          <p className="p-6 text-sm text-destructive">{error}</p>
+        ) : members.length === 0 ? (
+          <p className="p-6 text-sm italic text-muted-foreground">No one has signed in yet.</p>
+        ) : (
+          <ul className="divide-y divide-border">
+            {members.map((m) => (
+              <li key={m.id} className="flex flex-wrap items-center justify-between gap-3 p-4">
+                <div className="min-w-0">
+                  <p className="truncate text-sm">{m.email}</p>
+                  <p className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                    Joined {new Date(m.createdAt).toLocaleDateString()} · via {m.provider}
+                  </p>
+                </div>
+                <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                  {m.lastSignInAt
+                    ? `Last seen ${new Date(m.lastSignInAt).toLocaleDateString()}`
+                    : "Never signed in"}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
 }
