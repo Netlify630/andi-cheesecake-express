@@ -4,7 +4,7 @@
 
 export const site = {
   // Opening date — shown in the hero + footer. Edit anytime.
-  openingDate: "Opening Spring 2026",
+  openingDate: "OPENING AUGUST 14, 2026!",
 
   location: {
     addressLine1: "Your street address",
