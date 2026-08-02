@@ -106,11 +106,11 @@ function AuthPage() {
 
         <div className="rounded-3xl border border-border bg-card p-8 shadow-lg">
           <h1 className="font-display text-3xl">
-            {mode === "signin" ? "Welcome back" : "Create an account"}
+            {mode === "signin" ? "Welcome!" : "Create an account"}
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
             {mode === "signin"
-              ? "Sign in to leave reviews and get updates."
+              ? "Create a free account to leave reviews and get updates."
               : "It's free — just an email and a password."}
           </p>
 
@@ -168,7 +168,7 @@ function AuthPage() {
         </div>
 
         <a href="/" className="mt-8 text-center text-xs uppercase tracking-widest text-muted-foreground hover:text-accent">
-          ← Back to the shop
+          ← BACK TO THE WELCOME PAGE
         </a>
       </div>
     </div>
