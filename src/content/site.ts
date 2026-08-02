@@ -7,9 +7,9 @@ export const site = {
   openingDate: "OPENING AUGUST 14, 2026!",
 
   location: {
-    addressLine1: "Your street address",
-    addressLine2: "City, State ZIP",
-    note: "Look for the red fridge on the dirt parking spot.",
+    addressLine1: "14031 Silver Ridge Rd",
+    addressLine2: "Caldwell, ID\u00A083605",
+    note: "Look for the fridge on the porch by the round-about.",
     mapsUrl: "",
   },
   payment: {

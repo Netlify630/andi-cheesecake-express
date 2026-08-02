@@ -21,13 +21,13 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Local self-serve cheesecake slices from Andielicious. Baked on Thursdays, open Friday through Tuesday, with weekly flavors and reviews.",
+          "Local self-serve cheesecake slices from Andielicious. Baked on Thursdays, open Friday through Monday, with weekly flavors and reviews.",
       },
       { property: "og:title", content: "Andielicious Cheesecake · Self-Serve Slices" },
       {
         property: "og:description",
         content:
-          "Local self-serve cheesecake slices from Andielicious. Baked on Thursdays, open Friday through Tuesday, with weekly flavors and reviews.",
+          "Local self-serve cheesecake slices from Andielicious. Baked on Thursdays, open Friday through Monday, with weekly flavors and reviews.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -336,8 +336,8 @@ function Hero() {
             <em className="font-normal italic text-sage">self-served</em> with love.
           </h1>
           <p className="mt-8 max-w-md text-base leading-relaxed text-muted-foreground md:text-lg">
-            Every Thursday Andie bakes. Friday through Tuesday, the little cheesecake
-            fridge is open — drive over on your own time, pay, and take home a
+            Every Thursday Andie bakes. Friday through Monday, the little cheesecake
+            fridge is open — drive over on the available times, pay, and take home a
             fresh slice. <span className="italic text-accent">Slices only</span>, always made from scratch.
           </p>
           <div className="mt-10 flex flex-wrap gap-3">
@@ -503,7 +503,7 @@ function Flavors({ staples, weekly }: { staples: DbFlavor[]; weekly: DbFlavor | 
             <h2 className="mt-3 font-display text-4xl md:text-5xl">Staples & this week's pick.</h2>
           </div>
           <p className="max-w-sm text-sm text-muted-foreground">
-            Sold by the slice only — $7 each. Pay ahead by DM to reserve, or in
+            Sold by the slice only — $6 each. Pay ahead by DM to reserve, or in
             person at the fridge.
           </p>
         </div>
@@ -608,13 +608,13 @@ function HowItWorks() {
       n: "01",
       title: "Thursday — bake day",
       body:
-        "Every Thursday, Andie bakes the week's cheesecakes fresh from scratch. Follow along on the socials to see what's coming.",
+        "Every Thursday, Andie bakes the week's cheesecakes fresh from scratch. Follow along on the socials and sign up on the newsletter to see what's coming.",
     },
     {
       n: "02",
       title: "Drive over & pick up",
       body:
-        "Come by any time Friday through Tuesday, 8am–9pm. Grab your slice from the self-serve fridge, pay if you haven't, and enjoy.",
+        "Come by any time Friday through Sunday, 8am–8pm, Monday 3pm-8pm. Grab your slice from the self-serve fridge, pay if you haven't, and enjoy.",
     },
     {
       n: "03",
@@ -669,13 +669,13 @@ function Hours() {
         <Reveal variant="right" delay={120}>
           <dl className="divide-y divide-primary-foreground/15 border-y border-primary-foreground/15">
             {[
-              ["Monday", "8:00 am — 9:00 pm · 50% off"],
-              ["Tuesday", "8:00 am — 9:00 pm"],
+              ["Monday", "3:00pm-8:00pm· 50% off"],
+              ["Tuesday", "Closed"],
               ["Wednesday", "Closed"],
               ["Thursday", "Bake day — closed"],
-              ["Friday", "8:00 am — 9:00 pm"],
-              ["Saturday", "8:00 am — 9:00 pm"],
-              ["Sunday", "8:00 am — 9:00 pm"],
+              ["Friday", "8:00 am — 8:00 pm"],
+              ["Saturday", "8:00 am — 8:00 pm"],
+              ["Sunday", "8:00 am — 8:00 pm"],
             ].map(([day, hrs]) => (
               <div key={day} className="flex items-baseline justify-between py-4">
                 <dt className="font-display text-xl">{day}</dt>
@@ -855,8 +855,9 @@ function FlavorVote({ options }: { options: DbFlavor[] }) {
             </h2>
           </div>
           <p className="max-w-sm text-sm text-muted-foreground">
-            The top pick shows up in an upcoming rotating slot. One vote per
-            neighbor, please.
+            The top pick shows up in an upcoming rotating slot. On the last week
+            of every month, I will bake the top voted. One vote per neighbor,
+            please.
           </p>
         </div>
 
