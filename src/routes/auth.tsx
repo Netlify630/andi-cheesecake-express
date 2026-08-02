@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable";
+import { signInWithGoogle } from "@/lib/google-auth";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import logoAsset from "@/assets/andielicious-logo.png.asset.json";
@@ -82,12 +82,10 @@ function AuthPage() {
 
   async function handleGoogle() {
     setBusy(true);
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
-    });
-    if (result.error) {
+    const result = await signInWithGoogle(window.location.origin);
+    if (!result.ok) {
       setBusy(false);
-      return toast.error(result.error.message || "Google sign-in failed.");
+      return toast.error(result.message);
     }
     if (result.redirected) return;
     setBusy(false);
