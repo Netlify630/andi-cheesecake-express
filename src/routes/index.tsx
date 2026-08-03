@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 
-import logoAsset from "@/assets/andielicious-logo.png.asset.json";
+import logoUrl from "@/assets/andielicious-logo.png";
 import heroImg from "@/assets/hero-cheesecake.jpg";
 import flavorClassic from "@/assets/flavor-classic.jpg";
 import flavorChocolate from "@/assets/flavor-chocolate.jpg";
@@ -31,6 +31,8 @@ export const Route = createFileRoute("/")({
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { property: "og:image", content: "https://andielicious.com/og-image.png" },
+      { name: "twitter:image", content: "https://andielicious.com/og-image.png" },
     ],
   }),
   component: Home,
@@ -147,7 +149,7 @@ function WelcomeGate({ loading }: { loading: boolean }) {
       <div className="pointer-events-none absolute -right-24 bottom-0 h-80 w-80 rounded-full bg-berry/20 blur-3xl" />
       <div className="relative w-full max-w-lg rounded-3xl border border-berry/20 bg-card/90 p-10 text-center shadow-2xl backdrop-blur">
         <img
-          src={logoAsset.url}
+          src={logoUrl}
           alt="Andielicious logo"
           className="mx-auto h-24 w-24 rounded-full object-cover shadow-lg ring-4 ring-cream"
         />
@@ -253,7 +255,7 @@ function Nav() {
       <div className="mx-auto flex h-20 max-w-6xl items-center justify-between px-6">
         <a href="#top" className="flex items-center gap-3">
           <img
-            src={logoAsset.url}
+            src={logoUrl}
             alt="Andielicious"
             className="h-12 w-12 rounded-full object-cover ring-2 ring-berry/40 ring-offset-2 ring-offset-background"
           />
@@ -317,7 +319,7 @@ function Hero() {
         <div>
           <div className="mb-6 flex items-center gap-4">
             <img
-              src={logoAsset.url}
+              src={logoUrl}
               alt="Andielicious logo"
               className="h-20 w-20 rounded-full object-cover shadow-lg ring-4 ring-cream md:h-24 md:w-24"
             />
@@ -1105,7 +1107,7 @@ function Footer() {
     <footer className="border-t border-border bg-secondary/40 py-14">
       <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-8 px-6 md:flex-row">
         <div className="flex items-center gap-3">
-          <img src={logoAsset.url} alt="Andielicious" className="h-12 w-12 rounded-full object-cover" />
+          <img src={logoUrl} alt="Andielicious" className="h-12 w-12 rounded-full object-cover" />
           <div>
             <p className="font-display text-xl">Andielicious Cheesecake</p>
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">

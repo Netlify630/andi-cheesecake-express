@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
-import logoAsset from "@/assets/andielicious-logo.png.asset.json";
+import logoUrl from "@/assets/andielicious-logo.png";
 import { Trash2, LogOut, Eye, Cookie, Mail, Star, Users } from "lucide-react";
 import { listAppMembers, type AppMember } from "@/lib/admin.functions";
 
@@ -100,7 +100,7 @@ function AdminPage() {
       <header className="border-b border-border bg-cream/70 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           <a href="/" className="flex items-center gap-3">
-            <img src={logoAsset.url} alt="" className="h-10 w-10 rounded-full ring-2 ring-berry/40" />
+            <img src={logoUrl} alt="" className="h-10 w-10 rounded-full ring-2 ring-berry/40" />
             <div className="leading-tight">
               <p className="font-display text-lg text-accent">Andielicious</p>
               <p className="text-[10px] font-semibold uppercase tracking-widest text-sage">Owner dashboard</p>

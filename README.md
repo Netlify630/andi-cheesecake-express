@@ -1,29 +1,43 @@
-# Welcome to your Lovable project
+# Andielicious Cheesecake
 
-This project was built with [Lovable](https://lovable.dev).
+TanStack Start (React 19 + Vite 7) app with a Supabase backend.
 
-## Build with Lovable
+## Deploying to Vercel (fully portable)
 
-Open your project in the [Lovable editor](https://lovable.dev) and keep building.
+This project has **no runtime dependency on Lovable-hosted assets or services**:
+images are bundled from `src/assets/`, the social preview and favicon live in
+`public/`, and Google sign-in uses native Supabase OAuth.
 
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: connect the project to GitHub and every change made in Lovable is committed straight to your repository.
-- **Full ownership**: this code is yours. Push to your repository and your changes sync back into Lovable, ready for your next prompt.
+1. Push the repo to GitHub and import it in Vercel.
+2. Set the build target so the server output matches Vercel:
+   - Environment variable: `NITRO_PRESET=vercel`
+   - Build command: `npm run build` (or `bun run build`)
+3. Add the environment variables from [`.env.example`](./.env.example) in
+   Vercel → Settings → Environment Variables.
+4. In your Supabase project → Authentication → URL Configuration, add your
+   Vercel/production URLs to **Site URL** and **Redirect URLs**.
+5. In Supabase → Authentication → Providers → Google, paste your Google Cloud
+   OAuth **Client ID + Client Secret**, and in Google Cloud add
+   `https://YOUR-PROJECT.supabase.co/auth/v1/callback` as an authorized
+   redirect URI.
 
-## Development
+## Database
 
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+All schema lives in [`supabase/migrations`](./supabase/migrations). Against any
+Supabase project:
 
-```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
-npm run dev
+```bash
+supabase link --project-ref YOUR_PROJECT_REF
+supabase db push
 ```
 
-## Built with
+The Supabase project itself is the only external service — it can be your own
+Supabase org, or self-hosted Supabase, using the same env vars.
 
-- TanStack Start
-- TypeScript
-- React
-- Tailwind CSS
+## Local development
+
+```bash
+bun install
+cp .env.example .env   # fill in your Supabase values
+bun run dev
+```
