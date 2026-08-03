@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { signInWithGoogle } from "@/lib/google-auth";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
-import logoAsset from "@/assets/andielicious-logo.png.asset.json";
+import logoUrl from "@/assets/andielicious-logo.png";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -98,7 +98,7 @@ function AuthPage() {
       <Toaster position="top-center" />
       <div className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-6 py-16">
         <a href="/" className="mb-10 flex items-center justify-center gap-3">
-          <img src={logoAsset.url} alt="Andielicious" className="h-14 w-14 rounded-full object-cover ring-2 ring-berry/40" />
+          <img src={logoUrl} alt="Andielicious" className="h-14 w-14 rounded-full object-cover ring-2 ring-berry/40" />
           <span className="font-display text-2xl text-accent">Andielicious</span>
         </a>
 
