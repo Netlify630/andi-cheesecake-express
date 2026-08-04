@@ -281,7 +281,7 @@ function Nav() {
               {isAdmin && (
                 <Link
                   to="/admin"
-                  className="hidden rounded-full border border-accent bg-accent/10 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-accent hover:bg-accent hover:text-accent-foreground sm:inline-flex"
+                  className="inline-flex rounded-full border border-accent bg-accent/10 px-3 py-2 text-[10px] font-semibold uppercase tracking-widest text-accent hover:bg-accent hover:text-accent-foreground sm:px-4 sm:text-xs"
                 >
                   Dashboard
                 </Link>
@@ -991,30 +991,37 @@ function ReviewForm() {
   const [rating, setRating] = useState(5);
   const [publicConsent, setPublicConsent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [status, setStatus] = useState<{ kind: "ok" | "error"; message: string } | null>(null);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!name.trim() || !comment.trim()) {
+      setStatus({ kind: "error", message: "Please add your name and a short note." });
       toast.error("Please add your name and a short note.");
       return;
     }
+    setStatus(null);
     setSubmitting(true);
     const { error } = await supabase
       .from("reviews")
       .insert({
-        name: name.trim(),
+        name: name.trim().slice(0, 80),
         rating,
-        comment: comment.trim(),
+        comment: comment.trim().slice(0, 2000),
         public_consent: publicConsent,
       });
     setSubmitting(false);
 
     if (error) {
-      toast.error("Couldn't send your review. Try again in a moment.");
+      const message = `Couldn't send your review: ${error.message}`;
+      setStatus({ kind: "error", message });
+      toast.error(message);
       return;
     }
 
-    toast.success("Thank you! Andie will read this — she'll decide what to feature on the site.");
+    const okMessage = "Thank you! Andie will read this — she'll decide what to feature on the site.";
+    setStatus({ kind: "ok", message: okMessage });
+    toast.success(okMessage);
     setName("");
     setComment("");
     setRating(5);
@@ -1091,10 +1098,23 @@ function ReviewForm() {
         </span>
       </label>
 
+      {status && (
+        <p
+          role="status"
+          className={`rounded-xl border px-4 py-3 text-sm ${
+            status.kind === "ok"
+              ? "border-sage/50 bg-sage/10 text-foreground"
+              : "border-destructive/40 bg-destructive/10 text-destructive"
+          }`}
+        >
+          {status.message}
+        </p>
+      )}
+
       <button
         type="submit"
         disabled={submitting}
-        className="inline-flex w-fit rounded-full bg-primary px-8 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-primary-foreground transition-colors hover:bg-accent disabled:opacity-60"
+        className="inline-flex w-full justify-center rounded-full bg-primary px-8 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-primary-foreground transition-colors hover:bg-accent disabled:opacity-60 sm:w-fit"
       >
         {submitting ? "Sending…" : "Send review"}
       </button>
