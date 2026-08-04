@@ -1098,10 +1098,23 @@ function ReviewForm() {
         </span>
       </label>
 
+      {status && (
+        <p
+          role="status"
+          className={`rounded-xl border px-4 py-3 text-sm ${
+            status.kind === "ok"
+              ? "border-sage/50 bg-sage/10 text-foreground"
+              : "border-destructive/40 bg-destructive/10 text-destructive"
+          }`}
+        >
+          {status.message}
+        </p>
+      )}
+
       <button
         type="submit"
         disabled={submitting}
-        className="inline-flex w-fit rounded-full bg-primary px-8 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-primary-foreground transition-colors hover:bg-accent disabled:opacity-60"
+        className="inline-flex w-full justify-center rounded-full bg-primary px-8 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-primary-foreground transition-colors hover:bg-accent disabled:opacity-60 sm:w-fit"
       >
         {submitting ? "Sending…" : "Send review"}
       </button>
