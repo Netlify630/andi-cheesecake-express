@@ -991,30 +991,37 @@ function ReviewForm() {
   const [rating, setRating] = useState(5);
   const [publicConsent, setPublicConsent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [status, setStatus] = useState<{ kind: "ok" | "error"; message: string } | null>(null);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!name.trim() || !comment.trim()) {
+      setStatus({ kind: "error", message: "Please add your name and a short note." });
       toast.error("Please add your name and a short note.");
       return;
     }
+    setStatus(null);
     setSubmitting(true);
     const { error } = await supabase
       .from("reviews")
       .insert({
-        name: name.trim(),
+        name: name.trim().slice(0, 80),
         rating,
-        comment: comment.trim(),
+        comment: comment.trim().slice(0, 2000),
         public_consent: publicConsent,
       });
     setSubmitting(false);
 
     if (error) {
-      toast.error("Couldn't send your review. Try again in a moment.");
+      const message = `Couldn't send your review: ${error.message}`;
+      setStatus({ kind: "error", message });
+      toast.error(message);
       return;
     }
 
-    toast.success("Thank you! Andie will read this — she'll decide what to feature on the site.");
+    const okMessage = "Thank you! Andie will read this — she'll decide what to feature on the site.";
+    setStatus({ kind: "ok", message: okMessage });
+    toast.success(okMessage);
     setName("");
     setComment("");
     setRating(5);
