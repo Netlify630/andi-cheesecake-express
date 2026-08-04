@@ -281,7 +281,7 @@ function Nav() {
               {isAdmin && (
                 <Link
                   to="/admin"
-                  className="hidden rounded-full border border-accent bg-accent/10 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-accent hover:bg-accent hover:text-accent-foreground sm:inline-flex"
+                  className="inline-flex rounded-full border border-accent bg-accent/10 px-3 py-2 text-[10px] font-semibold uppercase tracking-widest text-accent hover:bg-accent hover:text-accent-foreground sm:px-4 sm:text-xs"
                 >
                   Dashboard
                 </Link>
