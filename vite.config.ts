@@ -6,10 +6,25 @@
 // You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
+// Canonical production backend. Pinned here (not in .env) because the editor
+// regenerates .env on every code change and would otherwise re-inject a
+// different project ref into the built bundle.
+const SUPABASE_URL = "https://olgvvhjguiwgcfxpdnli.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_Q5LWwgGUesb3x5rRMDz8Nw_XvPFKXBj";
+const SUPABASE_PROJECT_ID = "olgvvhjguiwgcfxpdnli";
+
 export default defineConfig({
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this
     server: { entry: "server" },
+  },
+  vite: {
+    define: {
+      "import.meta.env.VITE_SUPABASE_URL": JSON.stringify(SUPABASE_URL),
+      "import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY": JSON.stringify(SUPABASE_PUBLISHABLE_KEY),
+      "import.meta.env.VITE_SUPABASE_ANON_KEY": JSON.stringify(SUPABASE_PUBLISHABLE_KEY),
+      "import.meta.env.VITE_SUPABASE_PROJECT_ID": JSON.stringify(SUPABASE_PROJECT_ID),
+    },
   },
 });
