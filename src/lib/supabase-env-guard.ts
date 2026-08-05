@@ -18,14 +18,15 @@ function isForeign(value: string | undefined): boolean {
 
 try {
   if (typeof process !== "undefined" && process.env) {
-    if (!process.env.SUPABASE_URL || isForeign(process.env.SUPABASE_URL)) {
+    const urlWasForeign = !process.env.SUPABASE_URL || isForeign(process.env.SUPABASE_URL);
+    if (urlWasForeign) {
       process.env.SUPABASE_URL = CANONICAL_URL;
+      // The key must belong to the same project as the URL.
+      process.env.SUPABASE_PUBLISHABLE_KEY = CANONICAL_PUBLISHABLE_KEY;
     }
     if (isForeign(process.env.SUPABASE_PROJECT_ID) || !process.env.SUPABASE_PROJECT_ID) {
       process.env.SUPABASE_PROJECT_ID = CANONICAL_PROJECT_ID;
     }
-    // Only fill in the publishable key when it is missing; a host-provided key
-    // for the canonical project should always win.
     if (!process.env.SUPABASE_PUBLISHABLE_KEY) {
       process.env.SUPABASE_PUBLISHABLE_KEY = CANONICAL_PUBLISHABLE_KEY;
     }
