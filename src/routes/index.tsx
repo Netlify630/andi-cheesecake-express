@@ -740,16 +740,24 @@ function FlavorVote({ options }: { options: DbFlavor[] }) {
   const [submitting, setSubmitting] = useState(false);
   const [votedSlug, setVotedSlug] = useState<string | null>(null);
 
+  // Voting resets at the start of every calendar month (the dashboard archive
+  // keeps every month's results forever).
+  const now = new Date();
+  const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+  const voteStorageKey = `andielicious_voted_flavor_${monthKey}`;
+
   useEffect(() => {
     try {
-      const saved = localStorage.getItem("andielicious_voted_flavor");
+      const saved = localStorage.getItem(voteStorageKey);
       if (saved) setVotedSlug(saved);
     } catch {}
     loadCounts();
     async function loadCounts() {
       const { data, error } = await supabase
         .from("flavor_votes")
-        .select("flavor_slug");
+        .select("flavor_slug")
+        .gte("created_at", monthStart);
       if (error) console.error(error);
       const tally: Record<string, number> = {};
       (data ?? []).forEach((row: { flavor_slug: string }) => {
