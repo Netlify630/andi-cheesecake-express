@@ -146,6 +146,7 @@ function AdminPage() {
       <main className="mx-auto max-w-6xl px-6 py-10">
         {tab === "overview" && <OverviewTab />}
         {tab === "flavors" && <FlavorsTab />}
+        {tab === "votes" && <VotesTab />}
         {tab === "members" && <MembersTab />}
         {tab === "subscribers" && <SubscribersTab />}
         {tab === "reviews" && <ReviewsTab />}
