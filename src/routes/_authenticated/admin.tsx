@@ -121,6 +121,7 @@ function AdminPage() {
           {[
             { id: "overview", label: "Overview", icon: Eye },
             { id: "flavors", label: "Flavors", icon: Cookie },
+            { id: "votes", label: "Votes", icon: BarChart3 },
             { id: "members", label: "Members", icon: Users },
             { id: "subscribers", label: "Subscribers", icon: Mail },
             { id: "reviews", label: "Reviews", icon: Star },
