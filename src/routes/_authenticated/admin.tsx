@@ -732,3 +732,88 @@ function MembersTab() {
     </div>
   );
 }
+
+// ---------------- Votes (permanent monthly archive) ----------------
+type VoteRow = { flavor_slug: string; created_at: string };
+
+function VotesTab() {
+  const [rows, setRows] = useState<VoteRow[]>([]);
+  const [names, setNames] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      const [{ data: votes }, { data: flavors }] = await Promise.all([
+        supabase.from("flavor_votes").select("flavor_slug, created_at").order("created_at", { ascending: false }),
+        supabase.from("flavors").select("slug, name"),
+      ]);
+      const map: Record<string, string> = {};
+      site.voteFlavors.forEach((f) => (map[f.slug] = f.label));
+      (flavors ?? []).forEach((f: { slug: string; name: string }) => (map[f.slug] = f.name));
+      setNames(map);
+      setRows((votes ?? []) as VoteRow[]);
+      setLoading(false);
+    })();
+  }, []);
+
+  // Group by calendar month — nothing is ever deleted here.
+  const months = new Map<string, { label: string; total: number; tally: Record<string, number> }>();
+  rows.forEach((r) => {
+    const d = new Date(r.created_at);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+    const label = d.toLocaleDateString(undefined, { month: "long", year: "numeric" });
+    const entry = months.get(key) ?? { label, total: 0, tally: {} };
+    entry.total += 1;
+    entry.tally[r.flavor_slug] = (entry.tally[r.flavor_slug] ?? 0) + 1;
+    months.set(key, entry);
+  });
+  const ordered = [...months.entries()].sort((a, b) => (a[0] < b[0] ? 1 : -1));
+
+  if (loading) return <p className="text-sm text-muted-foreground">Loading votes…</p>;
+
+  return (
+    <div className="space-y-8">
+      <p className="text-sm text-muted-foreground">
+        Every month's results are kept here forever. Neighbors get a fresh vote at the
+        start of each new month — this archive is never reset.
+      </p>
+
+      {ordered.length === 0 && <p className="text-sm text-muted-foreground">No votes yet.</p>}
+
+      {ordered.map(([key, m]) => {
+        const sorted = Object.entries(m.tally).sort((a, b) => b[1] - a[1]);
+        return (
+          <section key={key} className="rounded-3xl border border-border bg-card p-6">
+            <div className="mb-5 flex items-end justify-between gap-4">
+              <h2 className="font-display text-2xl text-accent">{m.label} votes</h2>
+              <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                {m.total} {m.total === 1 ? "vote" : "votes"}
+              </span>
+            </div>
+            <ul className="space-y-3">
+              {sorted.map(([slug, count], i) => {
+                const pct = m.total ? Math.round((count / m.total) * 100) : 0;
+                return (
+                  <li key={slug}>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="font-medium">
+                        {i === 0 && "🏆 "}
+                        {names[slug] ?? slug}
+                      </span>
+                      <span className="text-muted-foreground">
+                        {count} · {pct}%
+                      </span>
+                    </div>
+                    <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-secondary">
+                      <div className="h-full rounded-full bg-accent" style={{ width: `${pct}%` }} />
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        );
+      })}
+    </div>
+  );
+}
