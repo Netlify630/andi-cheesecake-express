@@ -8,7 +8,7 @@
 //   2. Save. That's it.
 // ─────────────────────────────────────────────────────────────
 
-import flavorImage from "@/assets/flavor-rotating.jpg";
+import flavorImage from "@/assets/strawberry-cheesecake.png";
 
 export const flavorOfTheWeek = {
   // The flavor name (shown as the headline)

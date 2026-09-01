@@ -6,11 +6,11 @@ import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 
 import logoUrl from "@/assets/andielicious-logo.png";
-import heroImg from "@/assets/hero-cheesecake.jpg";
-import flavorClassic from "@/assets/flavor-classic.jpg";
-import flavorChocolate from "@/assets/flavor-chocolate.jpg";
+import heroImg from "@/assets/strawberry-cheesecake.png";
+import flavorClassic from "@/assets/strawberry-cheesecake.png";
+import flavorChocolate from "@/assets/chocolate-caramel.png";
 import bakerImg from "@/assets/baker.jpg";
-import flavorRotatingImg from "@/assets/flavor-rotating.jpg";
+import flavorRotatingImg from "@/assets/strawberry-cheesecake.png";
 import { site } from "@/content/site";
 import { Reveal } from "@/components/Reveal";
 
