@@ -41,7 +41,7 @@ function AdminPage() {
   const [checkingRole, setCheckingRole] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [email, setEmail] = useState<string>("");
-  const [tab, setTab] = useState<"overview" | "flavors" | "members" | "subscribers" | "reviews">("overview");
+  const [tab, setTab] = useState<"overview" | "flavors" | "votes" | "members" | "subscribers" | "reviews">("overview");
 
   useEffect(() => {
     (async () => {
