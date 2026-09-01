@@ -153,9 +153,6 @@ function WelcomeGate({ loading }: { loading: boolean }) {
           alt="Andielicious logo"
           className="mx-auto h-24 w-24 rounded-full object-cover shadow-lg ring-4 ring-cream"
         />
-        <p className="mt-6 text-[10px] font-semibold uppercase tracking-[0.35em] text-sage">
-          {site.openingDate}
-        </p>
         <h1 className="mt-3 font-display text-4xl leading-tight md:text-5xl">
           Welcome to <em className="italic text-accent">Andielicious</em>
         </h1>
@@ -325,7 +322,7 @@ function Hero() {
             />
             <div className="flex flex-col">
               <span className="text-[10px] font-semibold uppercase tracking-[0.35em] text-sage">
-                {site.openingDate} · Baked on Thursdays
+                Baked fresh on Thursdays
               </span>
               <span className="font-display text-3xl italic text-accent md:text-4xl">
                 Andielicious
@@ -372,7 +369,6 @@ function Hero() {
             height={1600}
             className="aspect-[7/8] w-full rounded-3xl object-cover shadow-xl"
           />
-          <OpeningDateSign />
         </div>
       </div>
     </section>
@@ -391,67 +387,6 @@ function StockBadge({ soldOut, className = "" }: { soldOut: boolean; className?:
       <span className={`h-1.5 w-1.5 rounded-full ${soldOut ? "bg-berry" : "bg-butter"}`} />
       {soldOut ? "Sold out" : "In stock"}
     </span>
-  );
-}
-
-function OpeningDateSign() {
-  const [pieces, setPieces] = useState<Array<{ id: number; x: number; y: number; r: number; delay: number; token: string; size: string }>>([]);
-
-  useEffect(() => {
-    const colors = ["bg-berry", "bg-sage", "bg-butter", "bg-accent", "bg-blush", "bg-caramel"];
-    const sizes = ["h-2 w-1", "h-1.5 w-1.5 rounded-full", "h-2.5 w-1", "h-1 w-2"];
-    setPieces(
-      Array.from({ length: 70 }, (_, id) => ({
-        id,
-        x: Math.round((Math.random() - 0.5) * 460),
-        y: Math.round(-90 - Math.random() * 260),
-        r: Math.round((Math.random() - 0.5) * 540),
-        // 900ms beat before the blast so the sign catches the eye first.
-        delay: 900 + Math.round(Math.random() * 280),
-
-        token: colors[id % colors.length],
-        size: sizes[id % sizes.length],
-      })),
-    );
-    const timer = window.setTimeout(() => setPieces([]), 3300);
-    return () => window.clearTimeout(timer);
-  }, []);
-
-  return (
-    <div className="absolute -bottom-8 left-6 max-w-[260px] overflow-visible">
-      <div className="pointer-events-none absolute left-1/2 top-4 h-0 w-0 overflow-visible" aria-hidden>
-        {pieces.map((piece) => (
-          <span
-            key={piece.id}
-            className={`confetti-piece absolute left-1/2 top-1/2 rounded-sm ${piece.size} ${piece.token}`}
-            style={
-              {
-                "--confetti-x": `${piece.x}px`,
-                "--confetti-y": `${piece.y}px`,
-                "--confetti-r": `${piece.r}deg`,
-                animationDelay: `${piece.delay}ms`,
-            } as CSSProperties
-            }
-          />
-        ))}
-      </div>
-      <div className="relative rounded-2xl border border-berry/30 bg-gradient-to-br from-cream via-background to-blush/60 p-6 shadow-2xl ring-1 ring-berry/10">
-        <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-accent px-3 py-0.5 text-[9px] font-semibold uppercase tracking-[0.3em] text-accent-foreground shadow-md">
-          Grand Opening
-        </div>
-        <div className="flex items-center gap-2 pt-1">
-          <span className="h-px flex-1 bg-berry/30" />
-          <span className="text-[9px] font-semibold uppercase tracking-[0.32em] text-sage">Save the date</span>
-          <span className="h-px flex-1 bg-berry/30" />
-        </div>
-        <p className="mt-3 text-center font-display text-2xl italic leading-tight text-accent">
-          {site.openingDate}
-        </p>
-        <p className="mt-2 text-center text-[10px] font-medium leading-relaxed text-muted-foreground">
-          A new little cheesecake fridge on the block
-        </p>
-      </div>
-    </div>
   );
 }
 
@@ -1130,9 +1065,6 @@ function Footer() {
           <img src={logoUrl} alt="Andielicious" className="h-12 w-12 rounded-full object-cover" />
           <div>
             <p className="font-display text-xl">Andielicious Cheesecake</p>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-              {site.openingDate}
-            </p>
           </div>
         </div>
         <p className="text-xs text-muted-foreground">

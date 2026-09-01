@@ -3,9 +3,6 @@
 // ─────────────────────────────────────────────────────────────
 
 export const site = {
-  // Opening date — shown in the hero + footer. Edit anytime.
-  openingDate: "OPENING AUGUST 14, 2026!",
-
   location: {
     addressLine1: "14031 Silver Ridge Rd",
     addressLine2: "Caldwell, ID\u00A083605",
