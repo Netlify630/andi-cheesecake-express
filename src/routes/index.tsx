@@ -492,12 +492,8 @@ function Flavors({ staples, weekly }: { staples: DbFlavor[]; weekly: DbFlavor | 
               <Reveal key={f.id} delay={i * 90}>
                 <article className="group flex flex-col">
                   <div className="relative overflow-hidden rounded-2xl bg-background">
-                    <img
-                      src={imageForFlavor(f)}
-                      alt={f.name}
-                      loading="lazy"
-                      width={900}
-                      height={900}
+                    <FlavorImage
+                      flavor={f}
                       className={`aspect-square w-full object-cover transition-transform duration-700 group-hover:scale-[1.03] ${f.sold_out ? "opacity-60 grayscale" : ""}`}
                     />
                     <StockBadge soldOut={!!f.sold_out} className="absolute left-3 top-3" />
