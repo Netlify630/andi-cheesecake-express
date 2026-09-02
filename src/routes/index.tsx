@@ -9,7 +9,6 @@ import logoUrl from "@/assets/andielicious-logo.png";
 import heroImg from "@/assets/strawberry-cheesecake.png";
 import flavorClassic from "@/assets/strawberry-cheesecake.png";
 import flavorChocolate from "@/assets/chocolate-caramel.png";
-import bakerImg from "@/assets/baker.jpg";
 import flavorRotatingImg from "@/assets/strawberry-cheesecake.png";
 import { site } from "@/content/site";
 import { Reveal } from "@/components/Reveal";
@@ -717,9 +716,11 @@ function BakerSection() {
             <p className="mt-4 text-xs font-semibold uppercase tracking-[0.22em] text-sage">
               {baker.role}
             </p>
-            <p className="mt-6 max-w-md text-base leading-relaxed text-muted-foreground">
-              {baker.bio}
-            </p>
+            <div className="mt-6 max-w-md space-y-4 text-base leading-relaxed text-muted-foreground">
+              {baker.bio.split("\n\n").map((para) => (
+                <p key={para.slice(0, 24)}>{para}</p>
+              ))}
+            </div>
           </div>
         </Reveal>
       </div>
@@ -781,7 +782,7 @@ function FlavorVote({ options }: { options: DbFlavor[] }) {
       return;
     }
     try {
-      localStorage.setItem("andielicious_voted_flavor", slug);
+      localStorage.setItem(voteStorageKey, slug);
     } catch {}
     setVotedSlug(slug);
     setCounts((prev) => ({ ...prev, [slug]: (prev[slug] ?? 0) + 1 }));
