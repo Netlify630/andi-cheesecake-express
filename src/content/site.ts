@@ -21,7 +21,7 @@ export const site = {
     name: "Andie",
     role: "Baker · Owner",
     bio:
-      "Hi! I'm Andie — a home baker turned neighborhood cheesecake lady. What started as Thursday-afternoon baking for friends is now the little self-serve fridge you see today. Every slice is made from scratch, in small batches, with real cream cheese, real vanilla, and a whole lot of love.",
+      "Hello! I'm Andie, a home-goods baker! The first time I tried a cheesecake, I was in Turkey, and I loved it. I went back for thirds. After that, cheesecake has kind of stuck with me.\n\nI had always wanted to try and make a cheesecake, but I was running a different sourdough treats business, and it always felt like too much. At the time, I was looking for a way to expand my business.\n\nThen we went to Kauai. A beautiful island in Hawaii, and it was there that I got my spark of inspiration. There was a small cheesecake self-serve fridge that served the best poi lilikoi cheesecake. After that, the spark bloomed. I wanted to make a self-serve fridge here, in Idaho. So I did.",
   },
 
   // Flavor vote — the flavors people can vote on for a future rotating slot.
