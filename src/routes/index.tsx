@@ -11,6 +11,7 @@ import flavorClassic from "@/assets/strawberry-cheesecake.png";
 import flavorChocolate from "@/assets/chocolate-caramel.png";
 import flavorRotatingImg from "@/assets/strawberry-cheesecake.png";
 import { normalizeImageUrl } from "@/lib/image-url";
+import { isStoredPhoto, resolveFlavorPhoto } from "@/lib/flavor-photo";
 import { site } from "@/content/site";
 import { Reveal } from "@/components/Reveal";
 
@@ -81,7 +82,15 @@ function FlavorImage({
   const [src, setSrc] = useState(() => imageForFlavor(flavor));
 
   useEffect(() => {
-    setSrc(imageForFlavor(flavor));
+    let active = true;
+    const load = async () => {
+      const resolved = flavor.image_url ? await resolveFlavorPhoto(flavor.image_url) : null;
+      if (active) setSrc(resolved || imageForFlavor(flavor));
+    };
+    void load();
+    return () => {
+      active = false;
+    };
   }, [flavor.slug, flavor.image_url]);
 
   return (
