@@ -436,9 +436,8 @@ function FlavorOfTheWeek({ weekly }: { weekly: DbFlavor | null }) {
         <Reveal className="order-2 md:order-1">
           <div className="relative">
             <div className="absolute -inset-5 -z-10 rounded-[2rem] bg-secondary" />
-            <img
-              src={imageForFlavor(weekly)}
-              alt={weekly.name}
+            <FlavorImage
+              flavor={weekly}
               width={1200}
               height={1200}
               className={`aspect-square w-full rounded-3xl object-cover shadow-xl ${weekly.sold_out ? "opacity-60 grayscale" : ""}`}
