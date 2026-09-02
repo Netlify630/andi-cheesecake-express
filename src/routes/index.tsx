@@ -10,6 +10,7 @@ import heroImg from "@/assets/strawberry-cheesecake.png";
 import flavorClassic from "@/assets/strawberry-cheesecake.png";
 import flavorChocolate from "@/assets/chocolate-caramel.png";
 import flavorRotatingImg from "@/assets/strawberry-cheesecake.png";
+import { normalizeImageUrl } from "@/lib/image-url";
 import { site } from "@/content/site";
 import { Reveal } from "@/components/Reveal";
 
@@ -57,7 +58,45 @@ const FALLBACK_IMAGES: Record<string, string> = {
 };
 
 function imageForFlavor(f: Pick<DbFlavor, "slug" | "image_url">) {
-  return f.image_url || FALLBACK_IMAGES[f.slug] || heroImg;
+  return normalizeImageUrl(f.image_url ?? "") || FALLBACK_IMAGES[f.slug] || heroImg;
+}
+
+function fallbackForFlavor(f: Pick<DbFlavor, "slug">) {
+  return FALLBACK_IMAGES[f.slug] || heroImg;
+}
+
+/** Renders the flavor photo, swapping to a local image if the pasted link fails. */
+function FlavorImage({
+  flavor,
+  className,
+  width = 900,
+  height = 900,
+}: {
+  flavor: Pick<DbFlavor, "slug" | "image_url" | "name">;
+  className?: string;
+  width?: number;
+  height?: number;
+}) {
+  const [src, setSrc] = useState(() => imageForFlavor(flavor));
+
+  useEffect(() => {
+    setSrc(imageForFlavor(flavor));
+  }, [flavor.slug, flavor.image_url]);
+
+  return (
+    <img
+      src={src}
+      alt={flavor.name}
+      loading="lazy"
+      width={width}
+      height={height}
+      onError={() => {
+        const fb = fallbackForFlavor(flavor);
+        if (src !== fb) setSrc(fb);
+      }}
+      className={className}
+    />
+  );
 }
 
 function Home() {

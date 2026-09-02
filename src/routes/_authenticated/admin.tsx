@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { normalizeImageUrl, looksLikeImageUrl } from "@/lib/image-url";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import logoUrl from "@/assets/andielicious-logo.png";
@@ -426,7 +427,7 @@ function FlavorEditor({
       name: name.trim(),
       slug: (slug || name).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""),
       description: description.trim(),
-      image_url: imageUrl.trim() || null,
+      image_url: normalizeImageUrl(imageUrl) || null,
       category,
       week_label: category === "weekly" ? weekLabel.trim() || null : null,
       position: Number(position) || 0,
@@ -464,6 +465,7 @@ function FlavorEditor({
         </Field>
         <Field label="Image URL (optional)">
           <input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} placeholder="https://…" className={inputCls} />
+          <ImageUrlPreview value={imageUrl} />
         </Field>
         {category === "weekly" && (
           <Field label='Week label (e.g. "This week only")'>
@@ -814,6 +816,51 @@ function VotesTab() {
           </section>
         );
       })}
+    </div>
+  );
+}
+
+function ImageUrlPreview({ value }: { value: string }) {
+  const url = normalizeImageUrl(value);
+  const [status, setStatus] = useState<"idle" | "ok" | "error">("idle");
+
+  useEffect(() => {
+    setStatus("idle");
+  }, [url]);
+
+  if (!url) {
+    return (
+      <p className="mt-2 text-xs text-muted-foreground">
+        Paste a direct link to an image file (ends in .jpg, .png, .webp). Leave blank to use the default photo.
+      </p>
+    );
+  }
+
+  if (!looksLikeImageUrl(url)) {
+    return (
+      <p className="mt-2 text-xs font-medium text-destructive">
+        That link points to a web page, not an image file. Open the photo itself, right-click it, and choose
+        “Copy image address”.
+      </p>
+    );
+  }
+
+  return (
+    <div className="mt-2 flex items-center gap-3">
+      <img
+        src={url}
+        alt="Preview"
+        onLoad={() => setStatus("ok")}
+        onError={() => setStatus("error")}
+        className="h-16 w-16 rounded-lg border border-border object-cover"
+      />
+      <p className={`text-xs ${status === "error" ? "font-medium text-destructive" : "text-muted-foreground"}`}>
+        {status === "ok"
+          ? "Looks good — this photo will show on the website."
+          : status === "error"
+            ? "This link won’t load as an image (it may be private or blocked). Try uploading the photo somewhere public and pasting that link."
+            : "Checking the link…"}
+      </p>
     </div>
   );
 }
