@@ -10,6 +10,7 @@ import heroImg from "@/assets/strawberry-cheesecake.png";
 import flavorClassic from "@/assets/strawberry-cheesecake.png";
 import flavorChocolate from "@/assets/chocolate-caramel.png";
 import flavorRotatingImg from "@/assets/strawberry-cheesecake.png";
+import { normalizeImageUrl } from "@/lib/image-url";
 import { site } from "@/content/site";
 import { Reveal } from "@/components/Reveal";
 
@@ -57,7 +58,45 @@ const FALLBACK_IMAGES: Record<string, string> = {
 };
 
 function imageForFlavor(f: Pick<DbFlavor, "slug" | "image_url">) {
-  return f.image_url || FALLBACK_IMAGES[f.slug] || heroImg;
+  return normalizeImageUrl(f.image_url ?? "") || FALLBACK_IMAGES[f.slug] || heroImg;
+}
+
+function fallbackForFlavor(f: Pick<DbFlavor, "slug">) {
+  return FALLBACK_IMAGES[f.slug] || heroImg;
+}
+
+/** Renders the flavor photo, swapping to a local image if the pasted link fails. */
+function FlavorImage({
+  flavor,
+  className,
+  width = 900,
+  height = 900,
+}: {
+  flavor: Pick<DbFlavor, "slug" | "image_url" | "name">;
+  className?: string;
+  width?: number;
+  height?: number;
+}) {
+  const [src, setSrc] = useState(() => imageForFlavor(flavor));
+
+  useEffect(() => {
+    setSrc(imageForFlavor(flavor));
+  }, [flavor.slug, flavor.image_url]);
+
+  return (
+    <img
+      src={src}
+      alt={flavor.name}
+      loading="lazy"
+      width={width}
+      height={height}
+      onError={() => {
+        const fb = fallbackForFlavor(flavor);
+        if (src !== fb) setSrc(fb);
+      }}
+      className={className}
+    />
+  );
 }
 
 function Home() {
@@ -397,9 +436,8 @@ function FlavorOfTheWeek({ weekly }: { weekly: DbFlavor | null }) {
         <Reveal className="order-2 md:order-1">
           <div className="relative">
             <div className="absolute -inset-5 -z-10 rounded-[2rem] bg-secondary" />
-            <img
-              src={imageForFlavor(weekly)}
-              alt={weekly.name}
+            <FlavorImage
+              flavor={weekly}
               width={1200}
               height={1200}
               className={`aspect-square w-full rounded-3xl object-cover shadow-xl ${weekly.sold_out ? "opacity-60 grayscale" : ""}`}
@@ -454,12 +492,8 @@ function Flavors({ staples, weekly }: { staples: DbFlavor[]; weekly: DbFlavor | 
               <Reveal key={f.id} delay={i * 90}>
                 <article className="group flex flex-col">
                   <div className="relative overflow-hidden rounded-2xl bg-background">
-                    <img
-                      src={imageForFlavor(f)}
-                      alt={f.name}
-                      loading="lazy"
-                      width={900}
-                      height={900}
+                    <FlavorImage
+                      flavor={f}
                       className={`aspect-square w-full object-cover transition-transform duration-700 group-hover:scale-[1.03] ${f.sold_out ? "opacity-60 grayscale" : ""}`}
                     />
                     <StockBadge soldOut={!!f.sold_out} className="absolute left-3 top-3" />
