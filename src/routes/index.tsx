@@ -58,6 +58,7 @@ const FALLBACK_IMAGES: Record<string, string> = {
 };
 
 function imageForFlavor(f: Pick<DbFlavor, "slug" | "image_url">) {
+  if (isStoredPhoto(f.image_url)) return FALLBACK_IMAGES[f.slug] || heroImg;
   return normalizeImageUrl(f.image_url ?? "") || FALLBACK_IMAGES[f.slug] || heroImg;
 }
 
