@@ -695,14 +695,15 @@ function BakerSection() {
           <div className="relative">
             <div className="absolute -inset-5 -z-10 rounded-[2rem] bg-blush" />
             <div className="absolute -inset-2 -z-10 rounded-[2rem] bg-sage/25" />
-            <img
-              src={bakerImg}
-              alt={`${baker.name}, the baker behind Andielicious`}
-              loading="lazy"
-              width={1200}
-              height={1400}
-              className="aspect-[6/7] w-full rounded-3xl object-cover shadow-xl"
-            />
+            <div
+              role="img"
+              aria-label="Photo of Andie coming soon"
+              className="flex aspect-[6/7] w-full items-center justify-center rounded-3xl border border-dashed border-border bg-card shadow-xl"
+            >
+              <span className="px-6 text-center text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+                Photo coming soon
+              </span>
+            </div>
           </div>
         </Reveal>
         <Reveal variant="right" delay={140}>
