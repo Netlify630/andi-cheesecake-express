@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { normalizeImageUrl, looksLikeImageUrl } from "@/lib/image-url";
+import { isStoredPhoto, resolveFlavorPhoto, uploadFlavorPhoto } from "@/lib/flavor-photo";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import logoUrl from "@/assets/andielicious-logo.png";
