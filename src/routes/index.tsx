@@ -578,7 +578,7 @@ function HowItWorks() {
       n: "02",
       title: "Drive over & pick up",
       body:
-        "Come by Monday through Thursday, 3pm–8pm, or Friday and Saturday, 8am–8pm. Grab your slice from the self-serve fridge, pay if you haven't, and enjoy.",
+        "Come by Monday through Thursday, 3pm–8pm, or Friday, 8am–8pm. Grab your slice from the self-serve fridge, pay if you haven't, and enjoy.",
     },
     {
       n: "03",
