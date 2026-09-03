@@ -367,7 +367,7 @@ function Hero() {
             <em className="font-normal italic text-sage">self-served</em> with love.
           </h1>
           <p className="mt-8 max-w-md text-base leading-relaxed text-muted-foreground md:text-lg">
-            Every Sunday Andie bakes. Monday through Saturday, the little cheesecake
+            Every Sunday Andie bakes. Monday through Friday, the little cheesecake
             fridge is open — drive over on the available times, pay, and take home a
             fresh slice. <span className="italic text-accent">Slices only</span>, always made from scratch.
           </p>
