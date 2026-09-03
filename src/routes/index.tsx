@@ -22,13 +22,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Local self-serve cheesecake slices from Andielicious. Baked on Thursdays, open Friday through Monday, with weekly flavors and reviews.",
-      },
-      { property: "og:title", content: "Andielicious Cheesecake · Self-Serve Slices" },
-      {
-        property: "og:description",
-        content:
-          "Local self-serve cheesecake slices from Andielicious. Baked on Thursdays, open Friday through Monday, with weekly flavors and reviews.",
+          "Local self-serve cheesecake slices from Andielicious. Baked on Sundays, open Monday through Friday, with weekly flavors and reviews.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -176,7 +170,6 @@ function Home() {
       <Nav />
       <Hero />
       <FlavorOfTheWeek weekly={weekly} />
-      <MondayDeal />
       <Flavors staples={staples} weekly={weekly} />
       <HowItWorks />
       <Hours />
@@ -231,21 +224,6 @@ function WelcomeGate({ loading }: { loading: boolean }) {
   );
 }
 
-function MondayDeal() {
-  return (
-    <section className="border-t border-border bg-berry/15">
-      <div className="mx-auto flex max-w-6xl flex-col items-center gap-3 px-6 py-8 text-center md:flex-row md:justify-center md:gap-6">
-        <span className="rounded-full bg-accent px-4 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-accent-foreground">
-          Weekly deal
-        </span>
-        <p className="font-display text-3xl italic text-accent md:text-4xl">50% off Mondays</p>
-        <p className="max-w-xs text-sm text-muted-foreground">
-          Every Monday, every slice is half price at the fridge.
-        </p>
-      </div>
-    </section>
-  );
-}
 
 
 function Nav() {
@@ -370,7 +348,7 @@ function Hero() {
             />
             <div className="flex flex-col">
               <span className="text-[10px] font-semibold uppercase tracking-[0.35em] text-sage">
-                Baked fresh on Thursdays
+                Baked fresh on Sundays
               </span>
               <span className="font-display text-3xl italic text-accent md:text-4xl">
                 Andielicious
@@ -383,7 +361,7 @@ function Hero() {
             <em className="font-normal italic text-sage">self-served</em> with love.
           </h1>
           <p className="mt-8 max-w-md text-base leading-relaxed text-muted-foreground md:text-lg">
-            Every Thursday Andie bakes. Friday through Monday, the little cheesecake
+            Every Sunday Andie bakes. Monday through Friday, the little cheesecake
             fridge is open — drive over on the available times, pay, and take home a
             fresh slice. <span className="italic text-accent">Slices only</span>, always made from scratch.
           </p>
@@ -586,15 +564,15 @@ function HowItWorks() {
   const steps = [
     {
       n: "01",
-      title: "Thursday — bake day",
+      title: "Sunday — bake day",
       body:
-        "Every Thursday, Andie bakes the week's cheesecakes fresh from scratch. Follow along on the socials and sign up on the newsletter to see what's coming.",
+        "Every Sunday, Andie bakes the week's cheesecakes fresh from scratch. Follow along on the socials and sign up on the newsletter to see what's coming.",
     },
     {
       n: "02",
       title: "Drive over & pick up",
       body:
-        "Come by any time Friday through Sunday, 8am–8pm, Monday 3pm-8pm. Grab your slice from the self-serve fridge, pay if you haven't, and enjoy.",
+        "Come by Monday through Thursday, 3pm–8pm, or Friday, 8am–8pm. Grab your slice from the self-serve fridge, pay if you haven't, and enjoy.",
     },
     {
       n: "03",
@@ -640,7 +618,7 @@ function Hours() {
             <p className="text-xs font-semibold uppercase tracking-[0.28em] text-blush">Visit</p>
             <h2 className="mt-3 font-display text-4xl md:text-5xl">Open five days a week.</h2>
             <p className="mt-6 max-w-md text-base leading-relaxed text-primary-foreground/75">
-              Bake day is Thursday — the fridge is closed while Andie's in the kitchen.
+              Bake day is Sunday — the fridge is closed while Andie's in the kitchen.
               Come by any other day and help yourself. <span className="text-blush">{site.payment.methods}.</span>
             </p>
           </div>
@@ -649,13 +627,13 @@ function Hours() {
         <Reveal variant="right" delay={120}>
           <dl className="divide-y divide-primary-foreground/15 border-y border-primary-foreground/15">
             {[
-              ["Monday", "3:00pm-8:00pm· 50% off"],
-              ["Tuesday", "Closed"],
-              ["Wednesday", "Closed"],
-              ["Thursday", "Bake day — closed"],
+              ["Monday", "3:00 pm — 8:00 pm"],
+              ["Tuesday", "3:00 pm — 8:00 pm"],
+              ["Wednesday", "3:00 pm — 8:00 pm"],
+              ["Thursday", "3:00 pm — 8:00 pm"],
               ["Friday", "8:00 am — 8:00 pm"],
-              ["Saturday", "8:00 am — 8:00 pm"],
-              ["Sunday", "8:00 am — 8:00 pm"],
+              ["Saturday", "Closed"],
+              ["Sunday", "Bake day — closed"],
             ].map(([day, hrs]) => (
               <div key={day} className="flex items-baseline justify-between py-4">
                 <dt className="font-display text-xl">{day}</dt>

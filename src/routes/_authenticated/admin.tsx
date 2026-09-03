@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { normalizeImageUrl, looksLikeImageUrl } from "@/lib/image-url";
+import { isStoredPhoto, resolveFlavorPhoto, uploadFlavorPhoto } from "@/lib/flavor-photo";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import logoUrl from "@/assets/andielicious-logo.png";
@@ -415,6 +416,7 @@ function FlavorEditor({
   const [slug, setSlug] = useState(flavor?.slug ?? "");
   const [description, setDescription] = useState(flavor?.description ?? "");
   const [imageUrl, setImageUrl] = useState(flavor?.image_url ?? "");
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [category, setCategory] = useState<Flavor["category"]>(flavor?.category ?? "staple");
   const [weekLabel, setWeekLabel] = useState(flavor?.week_label ?? "This week only");
   const [position, setPosition] = useState(flavor?.position ?? 0);
@@ -423,11 +425,21 @@ function FlavorEditor({
   async function save(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true);
+    let savedImageUrl = normalizeImageUrl(imageUrl) || null;
+    if (imageFile) {
+      try {
+        savedImageUrl = await uploadFlavorPhoto(imageFile);
+      } catch (error) {
+        setBusy(false);
+        toast.error(error instanceof Error ? error.message : "Photo upload failed");
+        return;
+      }
+    }
     const payload = {
       name: name.trim(),
       slug: (slug || name).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""),
       description: description.trim(),
-      image_url: normalizeImageUrl(imageUrl) || null,
+      image_url: savedImageUrl,
       category,
       week_label: category === "weekly" ? weekLabel.trim() || null : null,
       position: Number(position) || 0,
@@ -463,7 +475,34 @@ function FlavorEditor({
         <Field label="Description">
           <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} className={inputCls} />
         </Field>
-        <Field label="Image URL (optional)">
+        <Field label="Upload a photo">
+          <input
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/gif"
+            onChange={(e) => {
+              const file = e.target.files?.[0] ?? null;
+              if (file && file.size > 10 * 1024 * 1024) {
+                toast.error("Please choose an image smaller than 10 MB.");
+                e.currentTarget.value = "";
+                setImageFile(null);
+                return;
+              }
+              setImageFile(file);
+            }}
+            className="block w-full cursor-pointer rounded-lg border border-input bg-background px-3 py-2 text-sm file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-xs file:font-semibold"
+          />
+          {imageFile ? (
+            <div className="mt-2 flex items-center gap-3">
+              <img src={URL.createObjectURL(imageFile)} alt="Selected flavor preview" className="h-16 w-16 rounded-lg border border-border object-cover" />
+              <p className="text-xs text-muted-foreground">This photo will be uploaded when you save.</p>
+            </div>
+          ) : isStoredPhoto(imageUrl) ? (
+            <StoredPhotoPreview value={imageUrl} />
+          ) : (
+            <p className="mt-2 text-xs text-muted-foreground">Choose a JPG, PNG, WEBP, or GIF up to 10 MB.</p>
+          )}
+        </Field>
+        <Field label="Or paste an image URL (optional)">
           <input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} placeholder="https://…" className={inputCls} />
           <ImageUrlPreview value={imageUrl} />
         </Field>
@@ -817,6 +856,29 @@ function VotesTab() {
         );
       })}
     </div>
+  );
+}
+
+function StoredPhotoPreview({ value }: { value: string }) {
+  const [url, setUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    resolveFlavorPhoto(value).then((resolved) => {
+      if (active) setUrl(resolved);
+    });
+    return () => {
+      active = false;
+    };
+  }, [value]);
+
+  return url ? (
+    <div className="mt-2 flex items-center gap-3">
+      <img src={url} alt="Current flavor photo" className="h-16 w-16 rounded-lg border border-border object-cover" />
+      <p className="text-xs text-muted-foreground">Current uploaded photo. Choose a new file to replace it.</p>
+    </div>
+  ) : (
+    <p className="mt-2 text-xs text-muted-foreground">Current uploaded photo is being loaded…</p>
   );
 }
 
