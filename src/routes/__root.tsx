@@ -81,17 +81,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "Local self-serve cheesecake slices from Andielicious. Baked on Thursdays, open Friday through Tuesday, with weekly flavors and reviews.",
+          "Local self-serve cheesecake slices from Andielicious. Baked on Sundays, open Monday through Saturday, with weekly flavors and reviews.",
       },
       { property: "og:title", content: "Andielicious Cheesecake · Self-Serve Slices" },
       {
         property: "og:description",
-        content: "Local self-serve cheesecake slices from Andielicious. Baked on Thursdays, open Friday through Tuesday, with weekly flavors and reviews.",
+        content: "Local self-serve cheesecake slices from Andielicious. Baked on Sundays, open Monday through Saturday, with weekly flavors and reviews.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Andielicious Cheesecake · Self-Serve Slices" },
-      { name: "twitter:description", content: "Local self-serve cheesecake slices from Andielicious. Baked on Thursdays, open Friday through Tuesday, with weekly flavors and reviews." },
+      { name: "twitter:description", content: "Local self-serve cheesecake slices from Andielicious. Baked on Sundays, open Monday through Saturday, with weekly flavors and reviews." },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
