@@ -616,7 +616,7 @@ function Hours() {
         <Reveal variant="left">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.28em] text-blush">Visit</p>
-            <h2 className="mt-3 font-display text-4xl md:text-5xl">Open six days a week.</h2>
+            <h2 className="mt-3 font-display text-4xl md:text-5xl">Open five days a week.</h2>
             <p className="mt-6 max-w-md text-base leading-relaxed text-primary-foreground/75">
               Bake day is Sunday — the fridge is closed while Andie's in the kitchen.
               Come by any other day and help yourself. <span className="text-blush">{site.payment.methods}.</span>
