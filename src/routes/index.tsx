@@ -632,7 +632,7 @@ function Hours() {
               ["Wednesday", "3:00 pm — 8:00 pm"],
               ["Thursday", "3:00 pm — 8:00 pm"],
               ["Friday", "8:00 am — 8:00 pm"],
-              ["Saturday", "8:00 am — 8:00 pm"],
+              ["Saturday", "Closed"],
               ["Sunday", "Bake day — closed"],
             ].map(([day, hrs]) => (
               <div key={day} className="flex items-baseline justify-between py-4">
