@@ -43,7 +43,7 @@ function AdminPage() {
   const [checkingRole, setCheckingRole] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [email, setEmail] = useState<string>("");
-  const [tab, setTab] = useState<"overview" | "flavors" | "votes" | "members" | "subscribers" | "reviews">("overview");
+  const [tab, setTab] = useState<"overview" | "flavors" | "votes" | "signins" | "subscribers" | "reviews">("overview");
 
   useEffect(() => {
     (async () => {
@@ -124,7 +124,7 @@ function AdminPage() {
             { id: "overview", label: "Overview", icon: Eye },
             { id: "flavors", label: "Flavors", icon: Cookie },
             { id: "votes", label: "Votes", icon: BarChart3 },
-            { id: "members", label: "Members", icon: Users },
+            { id: "signins", label: "Sign-ins", icon: Users },
             { id: "subscribers", label: "Subscribers", icon: Mail },
             { id: "reviews", label: "Reviews", icon: Star },
           ].map((t) => {
@@ -149,7 +149,7 @@ function AdminPage() {
         {tab === "overview" && <OverviewTab />}
         {tab === "flavors" && <FlavorsTab />}
         {tab === "votes" && <VotesTab />}
-        {tab === "members" && <MembersTab />}
+        {tab === "signins" && <SignInsTab />}
         {tab === "subscribers" && <SubscribersTab />}
         {tab === "reviews" && <ReviewsTab />}
       </main>
@@ -722,8 +722,8 @@ function ReviewsTab() {
   );
 }
 
-// ---------------- Members ----------------
-function MembersTab() {
+// ---------------- Sign-ins ----------------
+function SignInsTab() {
   const [members, setMembers] = useState<AppMember[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -731,16 +731,31 @@ function MembersTab() {
   useEffect(() => {
     listAppMembers()
       .then((rows) => setMembers(rows))
-      .catch((e: unknown) => setError(e instanceof Error ? e.message : "Couldn't load members."))
+      .catch((e: unknown) => setError(e instanceof Error ? e.message : "Couldn't load sign-ins."))
       .finally(() => setLoading(false));
   }, []);
+
+  const fmt = (iso: string) =>
+    new Date(iso).toLocaleString(undefined, {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+    });
+
+  const sorted = [...members].sort((a, b) => {
+    const at = a.lastSignInAt ? Date.parse(a.lastSignInAt) : 0;
+    const bt = b.lastSignInAt ? Date.parse(b.lastSignInAt) : 0;
+    return bt - at;
+  });
 
   return (
     <div className="grid gap-6">
       <div>
-        <h2 className="font-display text-3xl">Members</h2>
+        <h2 className="font-display text-3xl">Sign-ins</h2>
         <p className="mt-1 max-w-xl text-sm text-muted-foreground">
-          Everyone who has created an account or signed in to your site.
+          Everyone who has ever signed in, with the date and time of their most recent sign-in.
         </p>
       </div>
       <div className="rounded-3xl border border-border bg-card">
@@ -748,22 +763,27 @@ function MembersTab() {
           <p className="p-6 text-sm text-muted-foreground">Loading…</p>
         ) : error ? (
           <p className="p-6 text-sm text-destructive">{error}</p>
-        ) : members.length === 0 ? (
+        ) : sorted.length === 0 ? (
           <p className="p-6 text-sm italic text-muted-foreground">No one has signed in yet.</p>
         ) : (
           <ul className="divide-y divide-border">
-            {members.map((m) => (
+            {sorted.map((m) => (
               <li key={m.id} className="flex flex-wrap items-center justify-between gap-3 p-4">
                 <div className="min-w-0">
                   <p className="truncate text-sm">{m.email}</p>
                   <p className="text-[10px] uppercase tracking-widest text-muted-foreground">
-                    Joined {new Date(m.createdAt).toLocaleDateString()} · via {m.provider}
+                    Account created {fmt(m.createdAt)} · via {m.provider}
                   </p>
                 </div>
-                <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
-                  {m.lastSignInAt
-                    ? `Last seen ${new Date(m.lastSignInAt).toLocaleDateString()}`
-                    : "Never signed in"}
+                <span className="text-right text-[11px] text-muted-foreground">
+                  {m.lastSignInAt ? (
+                    <>
+                      <span className="block text-[10px] uppercase tracking-widest">Last signed in</span>
+                      {fmt(m.lastSignInAt)}
+                    </>
+                  ) : (
+                    "Never signed in"
+                  )}
                 </span>
               </li>
             ))}
@@ -773,6 +793,7 @@ function MembersTab() {
     </div>
   );
 }
+
 
 // ---------------- Votes (permanent monthly archive) ----------------
 type VoteRow = { flavor_slug: string; created_at: string };
