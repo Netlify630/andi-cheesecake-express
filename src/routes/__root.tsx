@@ -11,6 +11,7 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportError } from "../lib/error-reporting";
+import { startSignInLogging } from "../lib/sign-in-log";
 
 function NotFoundComponent() {
   return (
@@ -126,6 +127,10 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+
+  useEffect(() => {
+    startSignInLogging();
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
