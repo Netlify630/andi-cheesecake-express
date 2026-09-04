@@ -77,6 +77,33 @@ export type Database = {
         }
         Relationships: []
       }
+      member_activity: {
+        Row: {
+          email: string | null
+          first_seen_at: string
+          last_sign_in_at: string
+          provider: string | null
+          sign_in_count: number
+          user_id: string
+        }
+        Insert: {
+          email?: string | null
+          first_seen_at?: string
+          last_sign_in_at?: string
+          provider?: string | null
+          sign_in_count?: number
+          user_id: string
+        }
+        Update: {
+          email?: string | null
+          first_seen_at?: string
+          last_sign_in_at?: string
+          provider?: string | null
+          sign_in_count?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       newsletter_subscribers: {
         Row: {
           created_at: string
@@ -173,6 +200,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      record_sign_in: { Args: never; Returns: undefined }
     }
     Enums: {
       app_role: "admin" | "user"
