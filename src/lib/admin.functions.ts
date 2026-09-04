@@ -72,8 +72,22 @@ export const listAppMembers = createServerFn({ method: "GET" }).handler(
 
     const serviceRoleKey = resolveServiceRoleKey();
     if (!serviceRoleKey) {
-      throw new Error("Member list unavailable: the server is missing its admin key.");
+      // No admin key on this host: fall back to the sign-in log table, which the
+      // owner account can read directly through RLS.
+      const { data: rows, error: logError } = await userClient
+        .from("member_activity")
+        .select("user_id, email, provider, first_seen_at, last_sign_in_at")
+        .order("last_sign_in_at", { ascending: false });
+      if (logError) throw new Error(logError.message);
+      return (rows ?? []).map((r) => ({
+        id: r.user_id as string,
+        email: (r.email as string) ?? "(no email)",
+        createdAt: r.first_seen_at as string,
+        lastSignInAt: (r.last_sign_in_at as string) ?? null,
+        provider: (r.provider as string) ?? "email",
+      }));
     }
+
 
     const adminClient = createClient(url, serviceRoleKey, {
       global: { fetch: makeFetch(serviceRoleKey) },
