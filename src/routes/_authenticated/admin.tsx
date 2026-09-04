@@ -149,7 +149,7 @@ function AdminPage() {
         {tab === "overview" && <OverviewTab />}
         {tab === "flavors" && <FlavorsTab />}
         {tab === "votes" && <VotesTab />}
-        {tab === "members" && <MembersTab />}
+        {tab === "signins" && <SignInsTab />}
         {tab === "subscribers" && <SubscribersTab />}
         {tab === "reviews" && <ReviewsTab />}
       </main>
