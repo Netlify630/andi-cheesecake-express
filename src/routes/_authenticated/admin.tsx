@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import logoUrl from "@/assets/andielicious-logo.png";
 import { Trash2, LogOut, Eye, Cookie, Mail, Star, Users, BarChart3 } from "lucide-react";
-import { listAppMembers, type AppMember } from "@/lib/admin.functions";
+import { listSignInEvents, type SignInEvent } from "@/lib/admin.functions";
 import { site } from "@/content/site";
 
 
