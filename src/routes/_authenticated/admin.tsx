@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import logoUrl from "@/assets/andielicious-logo.png";
 import { Trash2, LogOut, Eye, Cookie, Mail, Star, Users, BarChart3 } from "lucide-react";
-import { listAppMembers, type AppMember } from "@/lib/admin.functions";
+import { listSignInEvents, type SignInEvent } from "@/lib/admin.functions";
 import { site } from "@/content/site";
 
 
@@ -724,13 +724,13 @@ function ReviewsTab() {
 
 // ---------------- Sign-ins ----------------
 function SignInsTab() {
-  const [members, setMembers] = useState<AppMember[]>([]);
+  const [events, setEvents] = useState<SignInEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    listAppMembers()
-      .then((rows) => setMembers(rows))
+    listSignInEvents({ data: { days: 45 } })
+      .then((rows) => setEvents(rows))
       .catch((e: unknown) => setError(e instanceof Error ? e.message : "Couldn't load sign-ins."))
       .finally(() => setLoading(false));
   }, []);
@@ -744,18 +744,13 @@ function SignInsTab() {
       minute: "2-digit",
     });
 
-  const sorted = [...members].sort((a, b) => {
-    const at = a.lastSignInAt ? Date.parse(a.lastSignInAt) : 0;
-    const bt = b.lastSignInAt ? Date.parse(b.lastSignInAt) : 0;
-    return bt - at;
-  });
-
   return (
     <div className="grid gap-6">
       <div>
         <h2 className="font-display text-3xl">Sign-ins</h2>
         <p className="mt-1 max-w-xl text-sm text-muted-foreground">
-          Everyone who has ever signed in, with the date and time of their most recent sign-in.
+          Every sign-in from the past 45 days, newest first. If someone signs in more than once,
+          each time is listed separately.
         </p>
       </div>
       <div className="rounded-3xl border border-border bg-card">
@@ -763,27 +758,21 @@ function SignInsTab() {
           <p className="p-6 text-sm text-muted-foreground">Loading…</p>
         ) : error ? (
           <p className="p-6 text-sm text-destructive">{error}</p>
-        ) : sorted.length === 0 ? (
-          <p className="p-6 text-sm italic text-muted-foreground">No one has signed in yet.</p>
+        ) : events.length === 0 ? (
+          <p className="p-6 text-sm italic text-muted-foreground">No sign-ins recorded yet.</p>
         ) : (
           <ul className="divide-y divide-border">
-            {sorted.map((m) => (
-              <li key={m.id} className="flex flex-wrap items-center justify-between gap-3 p-4">
+            {events.map((e) => (
+              <li key={e.id} className="flex flex-wrap items-center justify-between gap-3 p-4">
                 <div className="min-w-0">
-                  <p className="truncate text-sm">{m.email}</p>
+                  <p className="truncate text-sm">{e.email}</p>
                   <p className="text-[10px] uppercase tracking-widest text-muted-foreground">
-                    Account created {fmt(m.createdAt)} · via {m.provider}
+                    via {e.provider}
                   </p>
                 </div>
                 <span className="text-right text-[11px] text-muted-foreground">
-                  {m.lastSignInAt ? (
-                    <>
-                      <span className="block text-[10px] uppercase tracking-widest">Last signed in</span>
-                      {fmt(m.lastSignInAt)}
-                    </>
-                  ) : (
-                    "Never signed in"
-                  )}
+                  <span className="block text-[10px] uppercase tracking-widest">Signed in</span>
+                  {fmt(e.at)}
                 </span>
               </li>
             ))}
@@ -793,6 +782,7 @@ function SignInsTab() {
     </div>
   );
 }
+
 
 
 // ---------------- Votes (permanent monthly archive) ----------------

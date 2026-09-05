@@ -8,6 +8,138 @@ export type AppMember = {
   provider: string;
 };
 
+/** One individual sign-in event (never merged with other sign-ins). */
+export type SignInEvent = {
+  id: string;
+  userId: string;
+  email: string;
+  provider: string;
+  at: string;
+};
+
+const SIGNIN_MARKER = "auth:signin:";
+
+/**
+ * Builds a Supabase client acting as the signed-in caller, and verifies the
+ * caller holds the admin role. Throws a friendly error otherwise.
+ */
+async function adminUserClient() {
+  const { createClient } = await import("@supabase/supabase-js");
+  const { getRequest } = await import("@tanstack/react-start/server");
+  const { resolveSupabaseUrl, resolveSupabasePublishableKey } = await import(
+    "./supabase-runtime.server"
+  );
+
+  const url = resolveSupabaseUrl();
+  const publishableKey = resolveSupabasePublishableKey();
+
+  const request = getRequest();
+  const authHeader = request?.headers?.get("authorization") ?? "";
+  const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : "";
+  if (!token || token.split(".").length !== 3) {
+    throw new Error("Please sign in again to view sign-ins.");
+  }
+
+  const makeFetch = (key: string): typeof fetch => (input, init) => {
+    const headers = new Headers(
+      typeof Request !== "undefined" && input instanceof Request ? input.headers : undefined,
+    );
+    if (init?.headers) new Headers(init.headers).forEach((v, k) => headers.set(k, v));
+    if (
+      (key.startsWith("sb_publishable_") || key.startsWith("sb_secret_")) &&
+      headers.get("Authorization") === `Bearer ${key}`
+    ) {
+      headers.delete("Authorization");
+    }
+    headers.set("apikey", key);
+    return fetch(input, { ...init, headers });
+  };
+
+  const userClient = createClient(url, publishableKey, {
+    global: {
+      fetch: makeFetch(publishableKey),
+      headers: { Authorization: `Bearer ${token}` },
+    },
+    auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
+  });
+
+  const { data: claimsData, error: claimsError } = await userClient.auth.getClaims(token);
+  const userId = claimsData?.claims?.sub;
+  if (claimsError || !userId) {
+    throw new Error("Please sign in again to view sign-ins.");
+  }
+
+  const { data: isAdmin, error: roleError } = await userClient.rpc("has_role", {
+    _user_id: userId,
+    _role: "admin",
+  });
+  if (roleError) throw new Error(roleError.message);
+  if (!isAdmin) throw new Error("Only the owner account can view sign-ins.");
+
+  return { userClient, url, makeFetch };
+}
+
+/**
+ * Admin-only: every individual sign-in, newest first. Each sign-in is its own
+ * entry — repeat sign-ins by the same person are all kept.
+ */
+export const listSignInEvents = createServerFn({ method: "GET" })
+  .inputValidator((data?: { days?: number }) => ({ days: Math.min(Math.max(data?.days ?? 45, 1), 365) }))
+  .handler(async ({ data }): Promise<SignInEvent[]> => {
+    const { userClient } = await adminUserClient();
+    const since = new Date(Date.now() - data.days * 86400000).toISOString();
+
+    const events: SignInEvent[] = [];
+
+    // Individual sign-in markers recorded on every sign-in.
+    const { data: viewRows, error: viewError } = await userClient
+      .from("page_views")
+      .select("id, path, created_at")
+      .like("path", `${SIGNIN_MARKER}%`)
+      .gte("created_at", since)
+      .order("created_at", { ascending: false })
+      .limit(5000);
+    if (viewError) throw new Error(viewError.message);
+
+    for (const row of viewRows ?? []) {
+      const raw = String(row.path ?? "").slice(SIGNIN_MARKER.length);
+      const [userId, provider, ...emailParts] = raw.split("|");
+      if (!userId) continue;
+      events.push({
+        id: String(row.id),
+        userId,
+        email: emailParts.join("|") || "(no email)",
+        provider: provider || "email",
+        at: row.created_at as string,
+      });
+    }
+
+    // Baseline from the sign-in log table, if it exists on this backend, so
+    // older sign-ins recorded before per-event logging still show up.
+    const { data: logRows } = await userClient
+      .from("member_activity")
+      .select("user_id, email, provider, first_seen_at, last_sign_in_at")
+      .gte("last_sign_in_at", since);
+
+    for (const r of logRows ?? []) {
+      const at = (r.last_sign_in_at as string) ?? (r.first_seen_at as string);
+      if (!at) continue;
+      const dup = events.some(
+        (e) => e.userId === r.user_id && Math.abs(Date.parse(e.at) - Date.parse(at)) < 120000,
+      );
+      if (dup) continue;
+      events.push({
+        id: `log-${r.user_id}-${at}`,
+        userId: r.user_id as string,
+        email: (r.email as string) ?? "(no email)",
+        provider: (r.provider as string) ?? "email",
+        at,
+      });
+    }
+
+    return events.sort((a, b) => Date.parse(b.at) - Date.parse(a.at));
+  });
+
 /**
  * Admin-only: list everyone who has created an account / signed in.
  *
@@ -17,58 +149,8 @@ export type AppMember = {
 export const listAppMembers = createServerFn({ method: "GET" }).handler(
   async (): Promise<AppMember[]> => {
     const { createClient } = await import("@supabase/supabase-js");
-    const { getRequest } = await import("@tanstack/react-start/server");
-    const {
-      resolveSupabaseUrl,
-      resolveSupabasePublishableKey,
-      resolveServiceRoleKey,
-    } = await import("./supabase-runtime.server");
-
-    const url = resolveSupabaseUrl();
-    const publishableKey = resolveSupabasePublishableKey();
-
-    const request = getRequest();
-    const authHeader = request?.headers?.get("authorization") ?? "";
-    const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : "";
-    if (!token || token.split(".").length !== 3) {
-      throw new Error("Please sign in again to view members.");
-    }
-
-    const makeFetch = (key: string): typeof fetch => (input, init) => {
-      const headers = new Headers(
-        typeof Request !== "undefined" && input instanceof Request ? input.headers : undefined,
-      );
-      if (init?.headers) new Headers(init.headers).forEach((v, k) => headers.set(k, v));
-      if (
-        (key.startsWith("sb_publishable_") || key.startsWith("sb_secret_")) &&
-        headers.get("Authorization") === `Bearer ${key}`
-      ) {
-        headers.delete("Authorization");
-      }
-      headers.set("apikey", key);
-      return fetch(input, { ...init, headers });
-    };
-
-    const userClient = createClient(url, publishableKey, {
-      global: {
-        fetch: makeFetch(publishableKey),
-        headers: { Authorization: `Bearer ${token}` },
-      },
-      auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
-    });
-
-    const { data: claimsData, error: claimsError } = await userClient.auth.getClaims(token);
-    const userId = claimsData?.claims?.sub;
-    if (claimsError || !userId) {
-      throw new Error("Please sign in again to view members.");
-    }
-
-    const { data: isAdmin, error: roleError } = await userClient.rpc("has_role", {
-      _user_id: userId,
-      _role: "admin",
-    });
-    if (roleError) throw new Error(roleError.message);
-    if (!isAdmin) throw new Error("Only the owner account can view members.");
+    const { resolveServiceRoleKey } = await import("./supabase-runtime.server");
+    const { userClient, url, makeFetch } = await adminUserClient();
 
     const serviceRoleKey = resolveServiceRoleKey();
     if (!serviceRoleKey) {
@@ -94,14 +176,14 @@ export const listAppMembers = createServerFn({ method: "GET" }).handler(
       const { data: viewRows, error: viewError } = await userClient
         .from("page_views")
         .select("path, created_at")
-        .like("path", "auth:signin:%")
+        .like("path", `${SIGNIN_MARKER}%`)
         .order("created_at", { ascending: false })
-        .limit(2000);
+        .limit(5000);
       if (viewError) throw new Error(viewError.message);
 
       const byUser = new Map<string, AppMember>();
       for (const row of viewRows ?? []) {
-        const raw = String(row.path ?? "").slice("auth:signin:".length);
+        const raw = String(row.path ?? "").slice(SIGNIN_MARKER.length);
         const [id, provider, ...emailParts] = raw.split("|");
         if (!id) continue;
         const email = emailParts.join("|") || "(no email)";
@@ -124,8 +206,6 @@ export const listAppMembers = createServerFn({ method: "GET" }).handler(
         (b.lastSignInAt ?? "").localeCompare(a.lastSignInAt ?? ""),
       );
     }
-
-
 
     const adminClient = createClient(url, serviceRoleKey, {
       global: { fetch: makeFetch(serviceRoleKey) },
