@@ -78,15 +78,53 @@ export const listAppMembers = createServerFn({ method: "GET" }).handler(
         .from("member_activity")
         .select("user_id, email, provider, first_seen_at, last_sign_in_at")
         .order("last_sign_in_at", { ascending: false });
-      if (logError) throw new Error(logError.message);
-      return (rows ?? []).map((r) => ({
-        id: r.user_id as string,
-        email: (r.email as string) ?? "(no email)",
-        createdAt: r.first_seen_at as string,
-        lastSignInAt: (r.last_sign_in_at as string) ?? null,
-        provider: (r.provider as string) ?? "email",
-      }));
+
+      if (!logError) {
+        return (rows ?? []).map((r) => ({
+          id: r.user_id as string,
+          email: (r.email as string) ?? "(no email)",
+          createdAt: r.first_seen_at as string,
+          lastSignInAt: (r.last_sign_in_at as string) ?? null,
+          provider: (r.provider as string) ?? "email",
+        }));
+      }
+
+      // Last resort: the dedicated log table doesn't exist on this backend.
+      // Rebuild the list from sign-in marker rows recorded in page_views.
+      const { data: viewRows, error: viewError } = await userClient
+        .from("page_views")
+        .select("path, created_at")
+        .like("path", "auth:signin:%")
+        .order("created_at", { ascending: false })
+        .limit(2000);
+      if (viewError) throw new Error(viewError.message);
+
+      const byUser = new Map<string, AppMember>();
+      for (const row of viewRows ?? []) {
+        const raw = String(row.path ?? "").slice("auth:signin:".length);
+        const [id, provider, ...emailParts] = raw.split("|");
+        if (!id) continue;
+        const email = emailParts.join("|") || "(no email)";
+        const at = row.created_at as string;
+        const existing = byUser.get(id);
+        if (!existing) {
+          byUser.set(id, {
+            id,
+            email,
+            createdAt: at,
+            lastSignInAt: at,
+            provider: provider || "email",
+          });
+        } else {
+          if (at < existing.createdAt) existing.createdAt = at;
+          if (!existing.lastSignInAt || at > existing.lastSignInAt) existing.lastSignInAt = at;
+        }
+      }
+      return [...byUser.values()].sort((a, b) =>
+        (b.lastSignInAt ?? "").localeCompare(a.lastSignInAt ?? ""),
+      );
     }
+
 
 
     const adminClient = createClient(url, serviceRoleKey, {
