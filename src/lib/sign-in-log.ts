@@ -13,15 +13,7 @@ async function record(session: Session | null | undefined) {
   if (!user?.id || seen.has(user.id)) return;
   seen.add(user.id);
 
-  try {
-    const { error } = await supabase.rpc("record_sign_in");
-    if (!error) return;
-  } catch {
-    // fall through to the fallback below
-  }
-
-  // Fallback: the dedicated log table/function may not exist on this backend.
-  // Record the sign-in as an activity row the owner account can already read.
+  // Always append an individual sign-in entry, so repeat sign-ins are all kept.
   try {
     const provider = (user.app_metadata?.provider as string) ?? "email";
     const email = user.email ?? "(no email)";
@@ -31,7 +23,15 @@ async function record(session: Session | null | undefined) {
   } catch {
     // Never let logging break the app.
   }
+
+  // Also keep the running per-person summary up to date when available.
+  try {
+    await supabase.rpc("record_sign_in");
+  } catch {
+    // Optional; ignore when the log table isn't present on this backend.
+  }
 }
+
 
 /** Subscribes once (browser only) so every sign-in is logged for the dashboard. */
 export function startSignInLogging() {
