@@ -414,40 +414,6 @@ function StockBadge({ soldOut, className = "" }: { soldOut: boolean; className?:
   );
 }
 
-function FlavorOfTheWeek({ weekly }: { weekly: DbFlavor | null }) {
-  if (!weekly) return null;
-  return (
-    <section id="flavor-of-the-week" className="border-t border-border py-20 md:py-28">
-      <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 px-6 md:grid-cols-[1fr_1.05fr]">
-        <Reveal className="order-2 md:order-1">
-          <div className="relative">
-            <div className="absolute -inset-5 -z-10 rounded-[2rem] bg-secondary" />
-            <FlavorImage
-              flavor={weekly}
-              width={1200}
-              height={1200}
-              className={`aspect-square w-full rounded-3xl object-cover shadow-xl ${weekly.sold_out ? "opacity-60 grayscale" : ""}`}
-            />
-            <StockBadge soldOut={!!weekly.sold_out} className="absolute left-4 top-4" />
-          </div>
-        </Reveal>
-        <Reveal delay={120} className="order-1 md:order-2">
-          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">
-            {weekly.week_label || "This week only"}
-          </p>
-          <h2 className="mt-4 font-display text-5xl leading-[1.05] md:text-6xl">
-            <em className="font-normal italic text-accent">Flavor</em> of the week
-          </h2>
-          <p className="mt-6 font-display text-3xl md:text-4xl">{weekly.name}</p>
-          <p className="mt-5 max-w-md text-base leading-relaxed text-muted-foreground">
-            {weekly.description}
-          </p>
-        </Reveal>
-
-      </div>
-    </section>
-  );
-}
 
 function Flavors({ items }: { items: DbFlavor[] }) {
   return (
