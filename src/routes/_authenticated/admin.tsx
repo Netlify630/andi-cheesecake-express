@@ -464,10 +464,9 @@ function FlavorEditor({
         <Field label="Name">
           <input value={name} onChange={(e) => setName(e.target.value)} required className={inputCls} />
         </Field>
-        <Field label="Category">
+        <Field label="Type">
           <select value={category} onChange={(e) => setCategory(e.target.value as Flavor["category"])} className={inputCls}>
-            <option value="staple">Staple (always on menu)</option>
-            <option value="weekly">Flavor of the week</option>
+            <option value="staple">Flavor (shows on the menu)</option>
             <option value="vote_option">Vote option</option>
           </select>
         </Field>
