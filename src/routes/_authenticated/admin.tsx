@@ -281,8 +281,7 @@ function FlavorsTab() {
   }
 
   const grouped = {
-    staple: flavors.filter((f) => f.category === "staple"),
-    weekly: flavors.filter((f) => f.category === "weekly"),
+    menu: flavors.filter((f) => f.category !== "vote_option"),
     vote_option: flavors.filter((f) => f.category === "vote_option"),
   };
 
@@ -292,7 +291,7 @@ function FlavorsTab() {
         <div>
           <h2 className="font-display text-3xl">Flavors</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Staples always show. Weekly is the rotating spotlight. Vote options are what people vote on.
+            Flavors show on the menu. Vote options are what people vote on.
           </p>
         </div>
         <button
@@ -307,10 +306,10 @@ function FlavorsTab() {
         <p className="text-sm text-muted-foreground">Loading…</p>
       ) : (
         <>
-          {(["staple", "weekly", "vote_option"] as const).map((cat) => (
+          {(["menu", "vote_option"] as const).map((cat) => (
             <section key={cat} className="rounded-3xl border border-border bg-card p-6">
-              <h3 className="font-display text-xl capitalize">
-                {cat === "vote_option" ? "Vote options" : cat === "weekly" ? "Flavor of the week" : "Staples"}
+              <h3 className="font-display text-xl">
+                {cat === "vote_option" ? "Vote options" : "Flavors"}
               </h3>
               <div className="mt-4 grid gap-3">
                 {grouped[cat].length === 0 && (
