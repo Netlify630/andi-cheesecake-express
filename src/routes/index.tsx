@@ -451,18 +451,14 @@ function FlavorOfTheWeek({ weekly }: { weekly: DbFlavor | null }) {
   );
 }
 
-function Flavors({ staples, weekly }: { staples: DbFlavor[]; weekly: DbFlavor | null }) {
-  const items = [
-    ...staples.map((f) => ({ ...f, tag: "Always on the menu" })),
-    ...(weekly ? [{ ...weekly, tag: "This week's rotating flavor" }] : []),
-  ];
+function Flavors({ items }: { items: DbFlavor[] }) {
   return (
     <section id="flavors" className="border-t border-border bg-secondary/40 py-20 md:py-28">
       <div className="mx-auto max-w-6xl px-6">
         <div className="mb-14 flex flex-col items-start justify-between gap-4 md:flex-row md:items-end">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">The Menu</p>
-            <h2 className="mt-3 font-display text-4xl md:text-5xl">Staples & this week's pick.</h2>
+            <h2 className="mt-3 font-display text-4xl md:text-5xl">Flavors.</h2>
           </div>
           <p className="max-w-sm text-sm text-muted-foreground">
             Sold by the slice only — $6 each. Pay ahead by DM to reserve, or in
