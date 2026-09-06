@@ -168,8 +168,7 @@ function Home() {
       <Toaster position="top-center" />
       <Nav />
       <Hero />
-      <FlavorOfTheWeek weekly={weekly} />
-      <Flavors staples={staples} weekly={weekly} />
+      <Flavors items={menuFlavors} />
       <HowItWorks />
       <Hours />
       <LocationSection />
