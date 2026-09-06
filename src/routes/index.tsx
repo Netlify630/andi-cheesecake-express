@@ -482,10 +482,7 @@ function Flavors({ items }: { items: DbFlavor[] }) {
                     />
                     <StockBadge soldOut={!!f.sold_out} className="absolute left-3 top-3" />
                   </div>
-                  <p className="mt-5 text-[10px] font-semibold uppercase tracking-[0.22em] text-accent">
-                    {f.tag}
-                  </p>
-                  <h3 className="mt-2 font-display text-2xl">{f.name}</h3>
+                  <h3 className="mt-5 font-display text-2xl">{f.name}</h3>
                   <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{f.description}</p>
                 </article>
               </Reveal>
