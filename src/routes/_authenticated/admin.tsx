@@ -504,11 +504,6 @@ function FlavorEditor({
           <input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} placeholder="https://…" className={inputCls} />
           <ImageUrlPreview value={imageUrl} />
         </Field>
-        {category === "weekly" && (
-          <Field label='Week label (e.g. "This week only")'>
-            <input value={weekLabel} onChange={(e) => setWeekLabel(e.target.value)} className={inputCls} />
-          </Field>
-        )}
         <Field label="Sort order (lower = first)">
           <input type="number" value={position} onChange={(e) => setPosition(Number(e.target.value))} className={inputCls} />
         </Field>
