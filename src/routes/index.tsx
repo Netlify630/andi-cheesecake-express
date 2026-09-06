@@ -151,8 +151,7 @@ function Home() {
       });
   }, [authState]);
 
-  const weekly = flavors.find((f) => f.category === "weekly") ?? null;
-  const staples = flavors.filter((f) => f.category === "staple");
+  const menuFlavors = flavors.filter((f) => f.category !== "vote_option");
   const voteOptions = flavors.filter((f) => f.category === "vote_option");
 
   if (authState !== "in") {
