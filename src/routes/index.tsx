@@ -368,7 +368,7 @@ function Hero() {
               href="#flavors"
               className="rounded-full bg-accent px-6 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent-foreground transition-colors hover:bg-primary"
             >
-              See this week's flavors
+              See the flavors
             </a>
             <a
               href="#how"
