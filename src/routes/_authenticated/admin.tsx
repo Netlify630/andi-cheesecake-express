@@ -417,7 +417,6 @@ function FlavorEditor({
   const [imageUrl, setImageUrl] = useState(flavor?.image_url ?? "");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [category, setCategory] = useState<Flavor["category"]>(flavor?.category ?? "staple");
-  const [weekLabel, setWeekLabel] = useState(flavor?.week_label ?? "This week only");
   const [position, setPosition] = useState(flavor?.position ?? 0);
   const [busy, setBusy] = useState(false);
 
@@ -440,7 +439,7 @@ function FlavorEditor({
       description: description.trim(),
       image_url: savedImageUrl,
       category,
-      week_label: category === "weekly" ? weekLabel.trim() || null : null,
+      week_label: null,
       position: Number(position) || 0,
     };
     const { error } = isNew
