@@ -281,8 +281,7 @@ function FlavorsTab() {
   }
 
   const grouped = {
-    staple: flavors.filter((f) => f.category === "staple"),
-    weekly: flavors.filter((f) => f.category === "weekly"),
+    menu: flavors.filter((f) => f.category !== "vote_option"),
     vote_option: flavors.filter((f) => f.category === "vote_option"),
   };
 
@@ -292,7 +291,7 @@ function FlavorsTab() {
         <div>
           <h2 className="font-display text-3xl">Flavors</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Staples always show. Weekly is the rotating spotlight. Vote options are what people vote on.
+            Flavors show on the menu. Vote options are what people vote on.
           </p>
         </div>
         <button
@@ -307,10 +306,10 @@ function FlavorsTab() {
         <p className="text-sm text-muted-foreground">Loading…</p>
       ) : (
         <>
-          {(["staple", "weekly", "vote_option"] as const).map((cat) => (
+          {(["menu", "vote_option"] as const).map((cat) => (
             <section key={cat} className="rounded-3xl border border-border bg-card p-6">
-              <h3 className="font-display text-xl capitalize">
-                {cat === "vote_option" ? "Vote options" : cat === "weekly" ? "Flavor of the week" : "Staples"}
+              <h3 className="font-display text-xl">
+                {cat === "vote_option" ? "Vote options" : "Flavors"}
               </h3>
               <div className="mt-4 grid gap-3">
                 {grouped[cat].length === 0 && (
@@ -418,7 +417,6 @@ function FlavorEditor({
   const [imageUrl, setImageUrl] = useState(flavor?.image_url ?? "");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [category, setCategory] = useState<Flavor["category"]>(flavor?.category ?? "staple");
-  const [weekLabel, setWeekLabel] = useState(flavor?.week_label ?? "This week only");
   const [position, setPosition] = useState(flavor?.position ?? 0);
   const [busy, setBusy] = useState(false);
 
@@ -441,7 +439,7 @@ function FlavorEditor({
       description: description.trim(),
       image_url: savedImageUrl,
       category,
-      week_label: category === "weekly" ? weekLabel.trim() || null : null,
+      week_label: null,
       position: Number(position) || 0,
     };
     const { error } = isNew
@@ -465,10 +463,9 @@ function FlavorEditor({
         <Field label="Name">
           <input value={name} onChange={(e) => setName(e.target.value)} required className={inputCls} />
         </Field>
-        <Field label="Category">
+        <Field label="Type">
           <select value={category} onChange={(e) => setCategory(e.target.value as Flavor["category"])} className={inputCls}>
-            <option value="staple">Staple (always on menu)</option>
-            <option value="weekly">Flavor of the week</option>
+            <option value="staple">Flavor (shows on the menu)</option>
             <option value="vote_option">Vote option</option>
           </select>
         </Field>
@@ -506,11 +503,6 @@ function FlavorEditor({
           <input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} placeholder="https://…" className={inputCls} />
           <ImageUrlPreview value={imageUrl} />
         </Field>
-        {category === "weekly" && (
-          <Field label='Week label (e.g. "This week only")'>
-            <input value={weekLabel} onChange={(e) => setWeekLabel(e.target.value)} className={inputCls} />
-          </Field>
-        )}
         <Field label="Sort order (lower = first)">
           <input type="number" value={position} onChange={(e) => setPosition(Number(e.target.value))} className={inputCls} />
         </Field>
