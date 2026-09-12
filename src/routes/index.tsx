@@ -10,6 +10,7 @@ import heroImg from "@/assets/strawberry-cheesecake.png";
 import flavorClassic from "@/assets/strawberry-cheesecake.png";
 import flavorChocolate from "@/assets/chocolate-caramel.png";
 import flavorRotatingImg from "@/assets/strawberry-cheesecake.png";
+import bakerPhoto from "@/assets/baker-photo.png.asset.json";
 import { normalizeImageUrl } from "@/lib/image-url";
 import { isStoredPhoto, resolveFlavorPhoto } from "@/lib/flavor-photo";
 import { site } from "@/content/site";
@@ -673,15 +674,13 @@ function BakerSection() {
           <div className="relative">
             <div className="absolute -inset-5 -z-10 rounded-[2rem] bg-blush" />
             <div className="absolute -inset-2 -z-10 rounded-[2rem] bg-sage/25" />
-            <div
-              role="img"
-              aria-label="Photo of Andie coming soon"
-              className="flex aspect-[6/7] w-full items-center justify-center rounded-3xl border border-dashed border-border bg-card shadow-xl"
-            >
-              <span className="px-6 text-center text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-                Photo coming soon
-              </span>
-            </div>
+            <img
+              src={bakerPhoto.url}
+              alt="Andie holding a plated slice of cheesecake in her kitchen"
+              width={1072}
+              height={1449}
+              className="w-full rounded-3xl border border-border bg-card shadow-xl"
+            />
           </div>
         </Reveal>
         <Reveal variant="right" delay={140}>
