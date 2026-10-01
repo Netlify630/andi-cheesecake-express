@@ -10,7 +10,7 @@ import heroImg from "@/assets/strawberry-cheesecake.png";
 import flavorClassic from "@/assets/strawberry-cheesecake.png";
 import flavorChocolate from "@/assets/chocolate-caramel.png";
 import flavorRotatingImg from "@/assets/strawberry-cheesecake.png";
-import bakerPhoto from "@/assets/baker-photo.png.asset.json";
+import bakerPhoto from "@/assets/baker-photo.png";
 import { normalizeImageUrl } from "@/lib/image-url";
 import { isStoredPhoto, resolveFlavorPhoto } from "@/lib/flavor-photo";
 import { site } from "@/content/site";
@@ -675,7 +675,7 @@ function BakerSection() {
             <div className="absolute -inset-5 -z-10 rounded-[2rem] bg-blush" />
             <div className="absolute -inset-2 -z-10 rounded-[2rem] bg-sage/25" />
             <img
-              src={bakerPhoto.url}
+              src={bakerPhoto}
               alt="Andie holding a plated slice of cheesecake in her kitchen"
               width={1072}
               height={1449}
