@@ -7,12 +7,7 @@ import { Toaster } from "@/components/ui/sonner";
 
 import logoUrl from "@/assets/andielicious-logo.png";
 import heroImg from "@/assets/strawberry-cheesecake.png";
-import flavorClassic from "@/assets/strawberry-cheesecake.png";
-import flavorChocolate from "@/assets/chocolate-caramel.png";
-import flavorRotatingImg from "@/assets/strawberry-cheesecake.png";
 import bakerPhoto from "@/assets/baker-photo.png";
-import { normalizeImageUrl } from "@/lib/image-url";
-import { isStoredPhoto, resolveFlavorPhoto } from "@/lib/flavor-photo";
 import { site } from "@/content/site";
 import { Reveal } from "@/components/Reveal";
 
