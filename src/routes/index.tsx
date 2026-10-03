@@ -7,12 +7,7 @@ import { Toaster } from "@/components/ui/sonner";
 
 import logoUrl from "@/assets/andielicious-logo.png";
 import heroImg from "@/assets/strawberry-cheesecake.png";
-import flavorClassic from "@/assets/strawberry-cheesecake.png";
-import flavorChocolate from "@/assets/chocolate-caramel.png";
-import flavorRotatingImg from "@/assets/strawberry-cheesecake.png";
 import bakerPhoto from "@/assets/baker-photo.png";
-import { normalizeImageUrl } from "@/lib/image-url";
-import { isStoredPhoto, resolveFlavorPhoto } from "@/lib/flavor-photo";
 import { site } from "@/content/site";
 import { Reveal } from "@/components/Reveal";
 
@@ -34,78 +29,8 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
-type DbFlavor = {
-  id: string;
-  slug: string;
-  name: string;
-  description: string;
-  image_url: string | null;
-  category: "staple" | "weekly" | "vote_option";
-  week_label: string | null;
-  position: number;
-  sold_out?: boolean;
-};
-
-// Fallback local images by slug when admin hasn't set an image_url.
-const FALLBACK_IMAGES: Record<string, string> = {
-  "classic-vanilla": flavorClassic,
-  "chocolate-ganache": flavorChocolate,
-  "strawberry-compote": flavorRotatingImg,
-};
-
-function imageForFlavor(f: Pick<DbFlavor, "slug" | "image_url">) {
-  if (isStoredPhoto(f.image_url)) return FALLBACK_IMAGES[f.slug] || heroImg;
-  return normalizeImageUrl(f.image_url ?? "") || FALLBACK_IMAGES[f.slug] || heroImg;
-}
-
-function fallbackForFlavor(f: Pick<DbFlavor, "slug">) {
-  return FALLBACK_IMAGES[f.slug] || heroImg;
-}
-
-/** Renders the flavor photo, swapping to a local image if the pasted link fails. */
-function FlavorImage({
-  flavor,
-  className,
-  width = 900,
-  height = 900,
-}: {
-  flavor: Pick<DbFlavor, "slug" | "image_url" | "name">;
-  className?: string;
-  width?: number;
-  height?: number;
-}) {
-  const [src, setSrc] = useState(() => imageForFlavor(flavor));
-
-  useEffect(() => {
-    let active = true;
-    const load = async () => {
-      const resolved = flavor.image_url ? await resolveFlavorPhoto(flavor.image_url) : null;
-      if (active) setSrc(resolved || imageForFlavor(flavor));
-    };
-    void load();
-    return () => {
-      active = false;
-    };
-  }, [flavor.slug, flavor.image_url]);
-
-  return (
-    <img
-      src={src}
-      alt={flavor.name}
-      loading="lazy"
-      width={width}
-      height={height}
-      onError={() => {
-        const fb = fallbackForFlavor(flavor);
-        if (src !== fb) setSrc(fb);
-      }}
-      className={className}
-    />
-  );
-}
 
 function Home() {
-  const [flavors, setFlavors] = useState<DbFlavor[]>([]);
   const [authState, setAuthState] = useState<"loading" | "in" | "out">("loading");
 
   useEffect(() => {
@@ -140,20 +65,7 @@ function Home() {
     } catch {
       /* storage blocked — skip tracking rather than double count */
     }
-    // Load flavors from DB (admin-editable)
-    supabase
-      .from("flavors")
-      .select("id,slug,name,description,image_url,category,week_label,position,sold_out")
-      .eq("active", true)
-      .order("position", { ascending: true })
-      .then(({ data, error }) => {
-        if (error) console.error(error);
-        setFlavors((data as DbFlavor[]) ?? []);
-      });
   }, [authState]);
-
-  const menuFlavors = flavors.filter((f) => f.category !== "vote_option");
-  const voteOptions = flavors.filter((f) => f.category === "vote_option");
 
   if (authState !== "in") {
     return (
@@ -169,12 +81,10 @@ function Home() {
       <Toaster position="top-center" />
       <Nav />
       <Hero />
-      <Flavors items={menuFlavors} />
       <HowItWorks />
       <Hours />
       <LocationSection />
       <BakerSection />
-      <FlavorVote options={voteOptions} />
       <NewsletterSubscribe />
       <Reviews />
       <Footer />
@@ -289,12 +199,12 @@ function Nav() {
           </span>
         </a>
         <nav className="hidden gap-6 text-xs font-medium uppercase tracking-[0.18em] lg:flex">
-          <a href="#flavors" className="hover:text-accent transition-colors">Flavors</a>
+          <Link to="/flavors" className="hover:text-accent transition-colors">Flavors</Link>
           <a href="#how" className="hover:text-accent transition-colors">How it works</a>
           <a href="#hours" className="hover:text-accent transition-colors">Hours</a>
           <a href="#location" className="hover:text-accent transition-colors">Location</a>
           <a href="#baker" className="hover:text-accent transition-colors">Baker</a>
-          <a href="#vote" className="hover:text-accent transition-colors">Vote</a>
+          <Link to="/flavors" className="hover:text-accent transition-colors">Vote</Link>
           <a href="#reviews" className="hover:text-accent transition-colors">Reviews</a>
         </nav>
         <div className="flex items-center gap-2">
@@ -365,12 +275,12 @@ function Hero() {
             fresh slice. <span className="italic text-accent">Slices only</span>, always made from scratch.
           </p>
           <div className="mt-10 flex flex-wrap gap-3">
-            <a
-              href="#flavors"
+            <Link
+              to="/flavors"
               className="rounded-full bg-accent px-6 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent-foreground transition-colors hover:bg-primary"
             >
               See the flavors
-            </a>
+            </Link>
             <a
               href="#how"
               className="rounded-full border border-accent bg-transparent px-6 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent transition-colors hover:bg-accent hover:text-accent-foreground"
