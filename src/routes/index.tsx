@@ -273,12 +273,12 @@ function Nav() {
           </span>
         </a>
         <nav className="hidden gap-6 text-xs font-medium uppercase tracking-[0.18em] lg:flex">
-          <a href="#flavors" className="hover:text-accent transition-colors">Flavors</a>
+          <Link to="/flavors" className="hover:text-accent transition-colors">Flavors</Link>
           <a href="#how" className="hover:text-accent transition-colors">How it works</a>
           <a href="#hours" className="hover:text-accent transition-colors">Hours</a>
           <a href="#location" className="hover:text-accent transition-colors">Location</a>
           <a href="#baker" className="hover:text-accent transition-colors">Baker</a>
-          <a href="#vote" className="hover:text-accent transition-colors">Vote</a>
+          <Link to="/flavors" className="hover:text-accent transition-colors">Vote</Link>
           <a href="#reviews" className="hover:text-accent transition-colors">Reviews</a>
         </nav>
         <div className="flex items-center gap-2">
@@ -349,12 +349,12 @@ function Hero() {
             fresh slice. <span className="italic text-accent">Slices only</span>, always made from scratch.
           </p>
           <div className="mt-10 flex flex-wrap gap-3">
-            <a
-              href="#flavors"
+            <Link
+              to="/flavors"
               className="rounded-full bg-accent px-6 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent-foreground transition-colors hover:bg-primary"
             >
               See the flavors
-            </a>
+            </Link>
             <a
               href="#how"
               className="rounded-full border border-accent bg-transparent px-6 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent transition-colors hover:bg-accent hover:text-accent-foreground"
