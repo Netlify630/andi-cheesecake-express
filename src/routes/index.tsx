@@ -105,7 +105,6 @@ function FlavorImage({
 }
 
 function Home() {
-  const [flavors, setFlavors] = useState<DbFlavor[]>([]);
   const [authState, setAuthState] = useState<"loading" | "in" | "out">("loading");
 
   useEffect(() => {
@@ -140,20 +139,7 @@ function Home() {
     } catch {
       /* storage blocked — skip tracking rather than double count */
     }
-    // Load flavors from DB (admin-editable)
-    supabase
-      .from("flavors")
-      .select("id,slug,name,description,image_url,category,week_label,position,sold_out")
-      .eq("active", true)
-      .order("position", { ascending: true })
-      .then(({ data, error }) => {
-        if (error) console.error(error);
-        setFlavors((data as DbFlavor[]) ?? []);
-      });
   }, [authState]);
-
-  const menuFlavors = flavors.filter((f) => f.category !== "vote_option");
-  const voteOptions = flavors.filter((f) => f.category === "vote_option");
 
   if (authState !== "in") {
     return (
@@ -169,12 +155,10 @@ function Home() {
       <Toaster position="top-center" />
       <Nav />
       <Hero />
-      <Flavors items={menuFlavors} />
       <HowItWorks />
       <Hours />
       <LocationSection />
       <BakerSection />
-      <FlavorVote options={voteOptions} />
       <NewsletterSubscribe />
       <Reviews />
       <Footer />
