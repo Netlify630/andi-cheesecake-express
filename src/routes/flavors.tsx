@@ -276,7 +276,12 @@ function VoteSection() {
   async function vote(slug: string) {
     if (votedSlug || submitting) return;
     setSubmitting(true);
-    const { error } = await supabase.from("flavor_votes").insert({ flavor_slug: slug });
+    const { data: u } = await supabase.auth.getUser();
+    const { error } = await supabase.from("flavor_votes").insert({
+      flavor_slug: slug,
+      user_id: u.user?.id ?? null,
+      voter_email: u.user?.email ?? null,
+    });
     setSubmitting(false);
     if (error) {
       toast.error("Couldn't record your vote. Try again in a moment.");

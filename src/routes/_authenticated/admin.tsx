@@ -784,11 +784,12 @@ function VotesTab() {
   const [rows, setRows] = useState<VoteRow[]>([]);
   const [names, setNames] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
+  const [open, setOpen] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
       const [{ data: votes }, { data: flavors }] = await Promise.all([
-        supabase.from("flavor_votes").select("flavor_slug, created_at").order("created_at", { ascending: false }),
+        supabase.from("flavor_votes").select("flavor_slug, created_at, voter_email").order("created_at", { ascending: false }),
         supabase.from("flavors").select("slug, name"),
       ]);
       const map: Record<string, string> = {};
@@ -801,14 +802,15 @@ function VotesTab() {
   }, []);
 
   // Group by calendar month — nothing is ever deleted here.
-  const months = new Map<string, { label: string; total: number; tally: Record<string, number> }>();
+  const months = new Map<string, { label: string; total: number; tally: Record<string, number>; voters: Record<string, VoteRow[]> }>();
   rows.forEach((r) => {
     const d = new Date(r.created_at);
     const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
     const label = d.toLocaleDateString(undefined, { month: "long", year: "numeric" });
-    const entry = months.get(key) ?? { label, total: 0, tally: {} };
+    const entry = months.get(key) ?? { label, total: 0, tally: {}, voters: {} };
     entry.total += 1;
     entry.tally[r.flavor_slug] = (entry.tally[r.flavor_slug] ?? 0) + 1;
+    (entry.voters[r.flavor_slug] ??= []).push(r);
     months.set(key, entry);
   });
   const ordered = [...months.entries()].sort((a, b) => (a[0] < b[0] ? 1 : -1));
@@ -837,20 +839,31 @@ function VotesTab() {
             <ul className="space-y-3">
               {sorted.map(([slug, count], i) => {
                 const pct = m.total ? Math.round((count / m.total) * 100) : 0;
+                const id = `${key}:${slug}`;
                 return (
                   <li key={slug}>
-                    <div className="flex items-center justify-between text-sm">
+                    <button type="button" onClick={() => setOpen(open === id ? null : id)} className="flex w-full items-center justify-between text-left text-sm">
                       <span className="font-medium">
                         {i === 0 && "🏆 "}
                         {names[slug] ?? slug}
                       </span>
                       <span className="text-muted-foreground">
-                        {count} · {pct}%
+                        {count} · {pct}% {open === id ? "▲" : "▼"}
                       </span>
-                    </div>
+                    </button>
                     <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-secondary">
                       <div className="h-full rounded-full bg-accent" style={{ width: `${pct}%` }} />
                     </div>
+                    {open === id && (
+                      <ul className="mt-2 space-y-1 rounded-xl bg-secondary/50 p-3 text-xs">
+                        {m.voters[slug].map((v, j) => (
+                          <li key={j} className="flex justify-between gap-3">
+                            <span>{v.voter_email ?? "Unknown (voted before names were saved)"}</span>
+                            <span className="text-muted-foreground">{new Date(v.created_at).toLocaleString()}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </li>
                 );
               })}
