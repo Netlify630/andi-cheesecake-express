@@ -277,11 +277,16 @@ function VoteSection() {
     if (votedSlug || submitting) return;
     setSubmitting(true);
     const { data: u } = await supabase.auth.getUser();
-    const { error } = await supabase.from("flavor_votes").insert({
+    let { error } = await supabase.from("flavor_votes").insert({
       flavor_slug: slug,
       user_id: u.user?.id ?? null,
       voter_email: u.user?.email ?? null,
     });
+    if (error) {
+      // Live database may not have the voter columns yet — save the vote anyway.
+      console.warn("vote with voter info failed, retrying plain", error);
+      ({ error } = await supabase.from("flavor_votes").insert({ flavor_slug: slug }));
+    }
     setSubmitting(false);
     if (error) {
       toast.error("Couldn't record your vote. Try again in a moment.");
