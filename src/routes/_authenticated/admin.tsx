@@ -778,7 +778,7 @@ function SignInsTab() {
 
 
 // ---------------- Votes (permanent monthly archive) ----------------
-type VoteRow = { flavor_slug: string; created_at: string };
+type VoteRow = { flavor_slug: string; created_at: string; voter_email: string | null };
 
 function VotesTab() {
   const [rows, setRows] = useState<VoteRow[]>([]);
