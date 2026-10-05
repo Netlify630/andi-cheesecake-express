@@ -788,10 +788,16 @@ function VotesTab() {
 
   useEffect(() => {
     (async () => {
-      const [{ data: votes }, { data: flavors }] = await Promise.all([
+      const [first, { data: flavors }] = await Promise.all([
         supabase.from("flavor_votes").select("flavor_slug, created_at, voter_email").order("created_at", { ascending: false }),
         supabase.from("flavors").select("slug, name"),
       ]);
+      let votes: unknown[] | null = first.data;
+      if (first.error) {
+        // Live database may not have the voter_email column yet — load plain votes.
+        const plain = await supabase.from("flavor_votes").select("flavor_slug, created_at").order("created_at", { ascending: false });
+        votes = (plain.data ?? []).map((v) => ({ ...v, voter_email: null }));
+      }
       const map: Record<string, string> = {};
       site.voteFlavors.forEach((f) => (map[f.slug] = f.label));
       (flavors ?? []).forEach((f: { slug: string; name: string }) => (map[f.slug] = f.name));
